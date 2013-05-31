@@ -1,0 +1,8 @@
+Version 1.1 [2013-05-30]
+ * Removed the R package mvtnorm dependency.
+ * Added the function rmult.crm to simulate correlated ordinal multinomial responses under a marginal continuation ratio model.
+ * Updated the help files.
+ * Minor changes in the R code.
+
+Version 1.0 [2012-11-12]
+ * The first version of the R package SimCorMultRes is released on CRAN.

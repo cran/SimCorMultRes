@@ -1,1 +1,1 @@
-export(rmult.bcl,rmult.clm,rnorta)
+export(rmult.bcl,rmult.clm,rmult.crm,rnorta,rsmvnorm)

@@ -1,10 +1,10 @@
 \name{rmult.clm}
 \alias{rmult.clm}
 \title{
-Simulating Correlated Ordinal Multinomial Responses
+Simulating Correlated Ordinal Multinomial Responses Under A Marginal Cumulative Link Model 
 }
 \description{
-This function generates correlated ordinal multinomial responses assuming a cumulative link model for the univariate marginal probabilities.
+This function simulates correlated ordinal multinomial responses assuming that a cumulative link model holds for the marginal probabilities.
 }
 \usage{
 rmult.clm(clsize, lin.pred, corr, cuts, link = "probit")
@@ -23,50 +23,51 @@ matrix or constant describing the latent correlation structure. See details for 
 vector containing the intercepts of the cumulative link model, and \code{-Inf} and \code{Inf} as first and last elements respectively.
 }
   \item{link}{
-character string indicating the link function of the cumulative link model. Options include \code{"probit"}, \code{"logit"}, \code{"clogclog"} or \code{"cauchit"}.
+character string indicating the link function of the cumulative link model. Options include \code{"probit"}, \code{"logit"}, \code{"cloglog"} or \code{"cauchit"}.
 }
 }
 \details{
-\enumerate{
-\item Each multinomial response takes the value \eqn{j} if and only if the corresponding latent random variable is on \eqn{(cuts_{j-1},cuts_{j}]}.
-\item The row dimension of \code{lin.pred} equals the sample size. 
-\item \code{lin.pred} contains the linear predictor of the cumulative link model after subtracting the intercepts.
-\item If \code{corr} is a matrix, then the NORTA method is employed and the correlation matrix corresponds to that of the multivariate normal distribution. Otherwise, it must be a constant on [0,1). For the \code{cloglog} link, it generates latent random vectors from a multivariate Gumbel distribution with correlation parameter \code{corr}. For the \code{logit} link, it generates the latent random vectors as the difference of two indepedent random vectors that follow a multivariate Gumbel distribution with correlation parameter \code{corr}.
-}
+The assumed marginal cumulative link model is  
+\deqn{Pr(Y_{it}\le j |x_{it})=F(\beta_{0j} +\beta^{'} x_{it})}
+where \eqn{Y_{it}} is the \eqn{t}-th multinomial response for subject \eqn{i}, \eqn{x_{it}} is the associated covariates vector, \eqn{F} is the cumulative distribution function determined by \code{link}, \eqn{\beta_{0j}} is the \eqn{j}-th response category specific intercept and \eqn{\beta} is the marginal regression parameter vector excluding intercepts.
+
+The multinomial response \eqn{Y_{it}} takes the value \eqn{j} if and only if the corresponding latent random variable lies on \eqn{(\beta_{0(j-1)}-\beta^{'}x_{it},\beta_{0j}-\beta^{'}x_{it}]}.
+
+The row dimension of \code{lin.pred} equals the sample size. Row \eqn{i} corresponds to subject \eqn{i}. The (\eqn{i,t})-th element of \code{lin.pred} equals \eqn{\beta^{'} x_{it}}. 
+
+If \code{corr} is a matrix, then the NORTA method is employed and the correlation matrix corresponds to that of the multivariate normal distribution. Otherwise, it must be a constant on [0,1). For the \code{cloglog} link, it generates latent random vectors from a multivariate Gumbel distribution with correlation parameter \code{corr}. For the \code{logit} link, it generates the latent random vectors as the difference of two indepedent random vectors that follow a multivariate Gumbel distribution with correlation parameter \code{corr}.
 }
 \value{
-\item{Ysim}{the correlated ordinal multinomial responses.}
+\item{Ysim}{the correlated ordinal multinomial responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
 \item{correlation}{the latent correlation matrix.}
 \item{rlatent}{the underlying latent random vectors.}
 }
 \references{
-Li, S.T. and Hammond, J.L. (1975). Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. IEEE Transacions on Systems, Man and Cybernetics (5), pp 557-561.  
+Balakrishnan, N. (1992). \emph{Handbook of the logistic distribution.} CRC Press.
 
-Balakrishnan, N. (1992). Handbook of the logistic distribution.
+Gumbel, E.J. (1961). \emph{Multivariate extremal distributions}. Bulletin de l'Institut International de Statistiques.
 
-Gumbel, E.J. (1961). Multivariate extremal distributions. Bulletin de l'Institut International de Statistiques.
+Li, S.T. and Hammond, J.L. (1975). Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transacions on Systems, Man and Cybernetics}, \bold{5}, 557-561.  
 
-Touloumis, A., Agresti, A. and Kateri, M. (2012). GEE for multinomial responses using a local odds ratios parameterization. \emph{Submitted}.
+Touloumis, A., Agresti, A. and Kateri, M. (2013). GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics}.
 }
 \author{
 Anestis Touloumis
 }
 \seealso{
-\code{\link{rnorta}}, \code{\link{rmult.bcl}}
+For simulating correlated nominal responses use \code{\link{rmult.bcl}}. For simulating correlated ordinal responses see also \code{\link{rmult.crm}}.
 }
 \examples{
 ## Simulating 500 correlated ordinal multinomial responses assuming a probit cumulative
-## link model for the univariate marginal probabilities. The model is described in Touloumis,
-## Agresti and Kateri (2012) with a toeplitz underlying correlation structure and a 
-## time-varying covariates design. 
+## link model for the univariate marginal probabilities. The sampling scheme is 
+## described in Touloumis et al.(2013).
 
 set.seed(12345)
 N <- 500
 clustersize <- 4
 intercepts <- c(-Inf,-1.5,-0.5,0.5,1.5,Inf)
 cormat <- toeplitz(c(1,0.85,0.5,0.15))
-linpred <- rmvnorm(N,sigma=toeplitz(c(1,rep(0.85,clustersize-1))))
-
+linpred <- rsmvnorm(N,toeplitz(c(1,rep(0.85,clustersize-1))))
 Y <- rmult.clm(clsize=clustersize,lin.pred=linpred,corr=cormat,
                cuts=intercepts,link="probit")$Ysim
 data <- cbind(c(t(Y)),c(t(linpred)))
@@ -75,11 +76,8 @@ data$id <- rep(1:N,each=clustersize)
 data$time <- rep(1:clustersize,N)
 colnames(data) <- c("y","x","id","time")
 
-## We fit a GEE model to illustrate that the regression coefficients can be estimated
+## Fit a GEE model to estimate the marginal regression coefficients.
 library(multgee)
-fitmod <- ordLORgee(y~x,data=data,id="id",repeated="time",link="probit",IM="cholesky")
-
-## The GEE estimates of the regression coefficients
+fitmod <- ordLORgee(y~x,data=data,id=id,repeated=time,link="probit",IM="cholesky")
 coef(fitmod)
-
 }
