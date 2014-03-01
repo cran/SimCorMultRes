@@ -1,1 +1,2 @@
 export(rmult.bcl,rmult.clm,rmult.crm,rnorta,rsmvnorm)
+importFrom(evd,rmvevd,qgumbel)

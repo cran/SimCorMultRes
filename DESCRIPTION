@@ -1,19 +1,17 @@
 Package: SimCorMultRes
 Type: Package
 Title: Simulates Correlated Multinomial Responses
-Version: 1.1
-Date: 2013-05-31
+Version: 1.2
+Date: 2014-03-01
 Author: Anestis Touloumis
-Maintainer: Anestis Touloumis <anestis@ebi.ac.uk>
-Depends: R(>= 2.15.0), evd
+Maintainer: Anestis Touloumis <Anestis.Touloumis@cruk.cam.ac.uk>
+Depends: R(>= 2.15.0)
+Imports: evd
 Suggests: multgee(>= 1.2)
-Description: Simulates correlated multinomial responses by utilizing
-        threshold approaches under a marginal cumulative link model, a
-        marginal continuation ratio model or a marginal baseline
-        category logit model.
+Description: Simulates correlated multinomial responses by utilizing threshold approaches under a cumulative link model, a continuation ratio model or a baseline category logit marginal model specification.
 License: GPL-3
 LazyLoad: yes
-Packaged: 2013-05-31 10:08:18 UTC; Anestis
+Packaged: 2014-03-02 11:59:36 UTC; Anestis
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-05-31 14:20:15
+Date/Publication: 2014-03-02 14:03:32

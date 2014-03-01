@@ -1,3 +1,8 @@
+Version 1.2 [2014-03-01]
+ * Added a vignette file.
+ * Updated the email address of the maintainer.
+ * Updated the help files.
+
 Version 1.1 [2013-05-30]
  * Removed the R package mvtnorm dependency.
  * Added the function rmult.crm to simulate correlated ordinal multinomial responses under a marginal continuation ratio model.
