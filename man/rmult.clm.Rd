@@ -49,7 +49,7 @@ Gumbel, E.J. (1961). \emph{Multivariate extremal distributions}. Bulletin de l'I
 
 Li, S.T. and Hammond, J.L. (1975). Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transacions on Systems, Man and Cybernetics}, \bold{5}, 557-561.  
 
-Touloumis, A., Agresti, A. and Kateri, M. (2013). GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics}.
+Touloumis, A., Agresti, A. and Kateri, M. (2013). GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics}, \bold{69}, 633-640.
 }
 \author{
 Anestis Touloumis
@@ -58,8 +58,8 @@ Anestis Touloumis
 For simulating correlated nominal responses use \code{\link{rmult.bcl}}. For simulating correlated ordinal responses see also \code{\link{rmult.crm}}.
 }
 \examples{
-## Simulating 500 correlated ordinal multinomial responses assuming a probit cumulative
-## link model for the univariate marginal probabilities. The sampling scheme is 
+## Simulating 500 correlated ordinal multinomial responses assuming a cumulative probit
+## link model for the marginal univariate probabilities. The sampling scheme is 
 ## described in Touloumis et al.(2013).
 
 set.seed(12345)

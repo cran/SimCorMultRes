@@ -14,7 +14,7 @@ rmult.bcl(clsize, ncategories, lin.pred, cor.matrix)
 integer indicating the common cluster size.
 }
   \item{ncategories}{
-integer indicating the number of response categories. 
+integer indicating the number of nominal response categories. 
 }
   \item{lin.pred}{
 matrix with \code{clsize} x \code{ncategories} columns. See details for more info.
@@ -52,11 +52,11 @@ For simulating correlated ordinal responses use \code{\link{rmult.clm}} or \code
 }
 \examples{
 ## Simulating 500 correlated nominal multinomial responses assuming a baseline category 
-## logit model for the univariate marginal probabilities.
-## In particular, assume that the first (I-1) category-specific intercepts are all equal to 1
-## and the first (I-1)-category-specific coefficients are all equal to 2. For identifiability 
-## reasons let the regression parameters related to the reference category to be 0.
-## Further, sample the cluster specific covariates from the standard normal distribution.
+## logit model for the marginal univariate probabilities. In particular, assume that the
+## first (I-1) category-specific intercepts are all equal to 1 and the first (I-1) 
+## category-specific coefficients are all equal to 2. For identifiability reasons, set 
+## equal to 0 all the reference-specific parameters. Further, sample the cluster specific
+## covariates from the standard normal distribution.
 
 set.seed(1)
 N <- 500
@@ -83,4 +83,3 @@ colnames(data) <- c("y","x","id","time")
 fitmod <- nomLORgee(y~x,id=id,repeated=time,data=data,add=0.01)
 coef(fitmod)
 }
-
