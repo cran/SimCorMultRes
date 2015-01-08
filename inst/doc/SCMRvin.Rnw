@@ -11,11 +11,11 @@
 \setlength{\topmargin}{-1.5cm}
 \begin{document}
 \SweaveOpts{concordance=TRUE}
-%\VignetteIndexEntry{Manual for SimCorMultRes}
+%\VignetteIndexEntry{Manual}
 \date{}
 \maketitle
 \section{Introduction}
-The \textbf{R} package \textbf{SimCorMultRes} is suitable for simulation of correlated ordinal or nominal multinomial responses conditional on a given marginal model specification for the univariate probabilities. The key idea is to modify existing threshold approaches that give rise to models for independent ordinal or nominal multinomial responses so as to introduce dependencies between the multinomial responses. This vignette describes the latent threshold approaches employed in \textbf{SimCorMultRes} and it illustrates via simple examples the use of the core functions.\\
+The \textbf{R} package \textbf{SimCorMultRes} is suitable for simulation of correlated ordinal or nominal multinomial responses (with three or more response categories) conditional on a given marginal model specification for the univariate probabilities. The key idea is to extend existing threshold approaches that give rise to regression models for independent ordinal or nominal multinomial responses so as to introduce dependencies between the multinomial responses. This vignette describes the latent threshold approaches employed in \textbf{SimCorMultRes} and it provides simple examples to illustrate the use of the core functions.\\
 \indent Let $Y_{it} \in \{1,2,\ldots,J\geq 3\}$ be the multinomial response for subject $i$ ($i=1,\ldots,N$) at the measurement occasion $t$ ($t=1,\ldots,T$), and let $\mathbf {x}_{it}$ be the associated covariates vector. 
 \section{Correlated Nominal Multinomial Responses}
 The function \texttt{rmult.bcl()} simulates correlated nominal multinomial responses under the marginal baseline category logit model specification
@@ -74,7 +74,7 @@ where $\mu_{it}=\boldsymbol{\beta}^{\prime} \mathbf {x}_{it}$ is the linear pred
 \end{enumerate}
 It can be shown that using the threshold
 $$Y_{it}=j \Leftrightarrow \beta_{0(j-1)} < U_{it} \leq \beta_{0j}$$
-correlated ordinal multinomial responses under the marginal cumulative link model specification in (\ref{MCLM}) are generated. This approach is based on the threshold approach mentioned in McCullagh (1980).\\
+correlated ordinal multinomial responses under the marginal cumulative link model specification in (\ref{MCLM}) are generated. This approach extends the approach of McCullagh (1980) to correlated multinomial responses.\\
 \indent The function \texttt{rmult.clm()} requires the user to provide the common cluster size $T$ (\texttt{clsize}), the linear predictor excluding the response category intercepts in a matrix form (\texttt{lin.pred}), the correlation structure of the latent random variables $\{e_{it}\}$ (\texttt{corr}), the response category specific intercepts $\beta_{0j}$'s (\texttt{cuts}) and the cumulative distribution function $F$ (\texttt{link}). The \texttt{lin.pred} argument should be an $N \times T$ matrix such that the $i$-th row corresponds to subject $i$ and has elements $(\mu_{i1},\mu_{i2},\cdots,\mu_{iT})$.\\
 \indent For example, suppose that we want to simulate correlated ordinal multinomial responses from a marginal cumulative probit model with $N=500$, $J=5$, $T=4$, $(\beta_{01},\beta_{02},\beta_{03},\beta_{04})=(-1.5,-0.5,0.5,1.5)$, $\boldsymbol \beta=\beta=1$ and a single time-stationary covariate for each subject drawn from a standard normal distribution. Further, suppose that the latent dependence structure is given by the correlation matrix
 $$\left( {\begin{array}{*{20}c}
@@ -137,11 +137,11 @@ The simulated clustered ordinal multinomial responses for the first six subjects
 head(Y$Ysim)
 @
   \begin{thebibliography}{1}
-\bibitem{}  McCullagh, P. (1980). Regression models for ordinal data. \textit{Journal of the Royal Statistical Society B} (\textbf{42}), 109-142.
+\bibitem{}  McCullagh, P. (1980). Regression models for ordinal data. \textit{Journal of the Royal Statistical Society B}, \textbf{42}, 109-142.
 
 \bibitem{}  McFadden, D. (1973). \textit{Conditional logit analysis of qualitative choice behavior}. Institute of Urban and Regional Development, University of California.
 
-\bibitem{}  Tutz, G. (1991). Sequential models in categorical regression, \textit{Computational Statistics \& Data Analysis} (\textbf{11}), 275-295.
+\bibitem{}  Tutz, G. (1991). Sequential models in categorical regression, \textit{Computational Statistics \& Data Analysis}, \textbf{11}, 275-295.
   \end{thebibliography}
 \end{document}
 

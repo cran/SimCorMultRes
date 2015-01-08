@@ -34,6 +34,8 @@ where \eqn{Y_{it}} is the \eqn{t}-th multinomial response for subject \eqn{i}, \
 The multinomial responses \eqn{Y_{it}} are determined by applying the latent variable threshold approach of Tutz (1991) to the corresponding latent variables.
 
 The row dimension of \code{lin.pred} equals the sample size. Row \eqn{i} corresponds to subject \eqn{i}. The (\eqn{i,t})-th element of \code{lin.pred} equals \eqn{\beta^{'} x_{it}}. 
+
+More details about the generative process can be found in the vignette.
 }
 \value{
 \item{Ysim}{the correlated ordinal multinomial responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}

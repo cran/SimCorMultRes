@@ -35,6 +35,8 @@ The multinomial response \eqn{Y_{it}} takes the value \eqn{j} if and only if the
 
 The row dimension of \code{lin.pred} equals the sample size. Row \eqn{i} corresponds to subject \eqn{i}. The (\eqn{i,t})-th element of \code{lin.pred} equals \eqn{\beta^{'} x_{it}}. 
 
+More details about the generative process can be found in the vignette.
+
 If \code{corr} is a matrix, then the NORTA method is employed and the correlation matrix corresponds to that of the multivariate normal distribution. Otherwise, it must be a constant on [0,1). For the \code{cloglog} link, it generates latent random vectors from a multivariate Gumbel distribution with correlation parameter \code{corr}. For the \code{logit} link, it generates the latent random vectors as the difference of two indepedent random vectors that follow a multivariate Gumbel distribution with correlation parameter \code{corr}.
 }
 \value{
@@ -60,7 +62,7 @@ For simulating correlated nominal responses use \code{\link{rmult.bcl}}. For sim
 \examples{
 ## Simulating 500 correlated ordinal multinomial responses assuming a cumulative probit
 ## link model for the marginal univariate probabilities. The sampling scheme is 
-## described in Touloumis et al.(2013).
+## described in Touloumis et al. (2013).
 
 set.seed(12345)
 N <- 500

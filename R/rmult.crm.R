@@ -18,6 +18,8 @@ function(clsize,lin.pred,cor.matrix,cuts,link="probit")
    stop("'-Inf' must be the first cutpoint")
  if(cuts[length(cuts)]!=Inf)
    stop("'Inf' must be the last cutpoint")
+ if(length(cuts) < 4 )
+   stop("'cuts' must have at least four elements")
  if(any(diff(cuts)<=0)) 
     stop("'cuts' must be increasing") 
  ncategories <- length(cuts)-1

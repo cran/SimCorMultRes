@@ -1,7 +1,7 @@
-### R code from vignette source 'Vignette.Rnw'
+### R code from vignette source 'SCMRvin.Rnw'
 
 ###################################################
-### code chunk number 1: Vignette.Rnw:40-52
+### code chunk number 1: SCMRvin.Rnw:40-52
 ###################################################
 library("SimCorMultRes")
 set.seed(1)
@@ -18,13 +18,13 @@ Y <- rmult.bcl(clsize=3,ncategories=4,lin.pred=linpred,cor.matrix=cormat)
 
 
 ###################################################
-### code chunk number 2: Vignette.Rnw:55-56
+### code chunk number 2: SCMRvin.Rnw:55-56
 ###################################################
 head(Y$Ysim)
 
 
 ###################################################
-### code chunk number 3: Vignette.Rnw:87-96
+### code chunk number 3: SCMRvin.Rnw:87-96
 ###################################################
 set.seed(1)
 N <- 500
@@ -38,13 +38,13 @@ Y <- rmult.clm(clsize=clustersize,lin.pred=linpred,corr=cormat,
 
 
 ###################################################
-### code chunk number 4: Vignette.Rnw:99-100
+### code chunk number 4: SCMRvin.Rnw:99-100
 ###################################################
 head(Y$Ysim)
 
 
 ###################################################
-### code chunk number 5: Vignette.Rnw:124-133
+### code chunk number 5: SCMRvin.Rnw:124-133
 ###################################################
 set.seed(1)
 N <- 500
@@ -58,7 +58,7 @@ Y <- rmult.crm(clsize=clustersize,lin.pred=linpred,cor.matrix=cormat,
 
 
 ###################################################
-### code chunk number 6: Vignette.Rnw:136-137
+### code chunk number 6: SCMRvin.Rnw:136-137
 ###################################################
 head(Y$Ysim)
 

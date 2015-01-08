@@ -30,7 +30,9 @@ where \eqn{Y_{it}} is the \eqn{t}-th multinomial response for subject \eqn{i}, \
 
 The multinomial response \eqn{Y_{it}} is obtained by applying the principle of maximum random utility to the corresponding underlying latent variables.
 
-The row dimension of \code{lin.pred} equals the sample size. Row \eqn{i} corresponds to subject \eqn{i}. Columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} correspond to the linear predictors \eqn{\beta_{01}+ \beta^{'}_1 x_{it},...,\beta_{0I}+ \beta^{'}_I x_{it}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}.
+The row dimension of \code{lin.pred} equals the sample size. Row \eqn{i} corresponds to subject \eqn{i}. Columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} correspond to the linear predictors \eqn{\beta_{01}+ \beta^{'}_1 x_{it},...,\beta_{0I}+ \beta^{'}_I x_{it}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}. 
+
+More details about the generative process can be found in the vignette.
 
 The algorithm forces \code{cor.matrix} to respect the local independence assumption between the alternatives. 
 }
@@ -71,7 +73,7 @@ cormat <- toeplitz(c(1,rep(0,3),rep(c(0.9,0,0,0),2)))
 
 
 ## Fit a GEE model to estimate the regression coefficients of the marginal model,
-## i.e. the beta stars.
+## i.e., the beta stars.
 
 library(multgee)
 Y <- rmult.bcl(clsize=3,ncategories=4,lin.pred=linpred,cor.matrix=cormat)$Ysim

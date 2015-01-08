@@ -6,7 +6,7 @@
 Simulating Correlated Multinomial Responses
 }
 \description{
-Functions to simulate correlated nominal or ordinal multinomial responses under a given marginal model specification for the univariate probabilities.
+Functions to simulate correlated nominal or ordinal multinomial responses (three or more response categories) under a given marginal model specification for the univariate probabilities.
 }
 \details{
 The simulated correlated multinomial responses are drawn as realizations of a latent underlying regression model for continuous random vectors with the correlation structure expressed in terms of the latent random vectors and not of the correlated multinomial responses. 
@@ -15,7 +15,7 @@ For an ordinal response scale, the multinomial responses are simulated either un
 
 For a nominal response scale, the multinomial responses are simulated under a marginal baseline category logit model by utilizing the principle of maximum random utility (McFadden, 1973).
 
-The package aims to ease the simulation of correlated multinomial responses when the interest lies on estimating the marginal regression coefficient parameters, e.g. by fitting a GEE model such as the local odds ratios GEE approach in Touloumis et al. (2013).
+The package aims to ease the simulation of correlated multinomial responses when the interest lies on estimating the marginal regression coefficient parameters, e.g., by fitting a local odds ratios GEE model (Touloumis et al., 2013).
 }
 \author{
 Anestis Touloumis <Anestis.Touloumis@cruk.cam.ac.uk>

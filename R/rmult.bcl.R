@@ -14,7 +14,6 @@ function(clsize,ncategories,lin.pred,cor.matrix)
  if(ncol(lin.pred)!= dims.lp) 
      stop("'lin.pred' must have ",dims.lp," columns")
  R <- nrow(lin.pred)
-
  if(!is.numeric(cor.matrix)) 
      stop("'cor.matrix' must be numeric")
  cor.matrix <- as.matrix(cor.matrix)
