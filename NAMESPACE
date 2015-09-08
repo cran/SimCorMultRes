@@ -1,2 +1,3 @@
 export(rmult.bcl,rmult.clm,rmult.crm,rnorta,rsmvnorm)
 importFrom(evd,rmvevd,qgumbel)
+importFrom("stats", "pnorm", "qcauchy", "qlogis", "rnorm", "toeplitz")

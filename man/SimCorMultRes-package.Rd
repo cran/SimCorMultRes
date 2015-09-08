@@ -18,9 +18,9 @@ For a nominal response scale, the multinomial responses are simulated under a ma
 The package aims to ease the simulation of correlated multinomial responses when the interest lies on estimating the marginal regression coefficient parameters, e.g., by fitting a local odds ratios GEE model (Touloumis et al., 2013).
 }
 \author{
-Anestis Touloumis <Anestis.Touloumis@cruk.cam.ac.uk>
+Anestis Touloumis <Anestis.Touloumis@brighton.ac.uk>
 
-Maintainer: Anestis Touloumis <Anestis.Touloumis@cruk.cam.ac.uk>
+Maintainer: Anestis Touloumis <Anestis.Touloumis@brighton.ac.uk>
 }
 \references{
 McCullagh, P. (1980). Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B}, \bold{42}, 109-142.
