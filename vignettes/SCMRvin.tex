@@ -10,7 +10,7 @@
 \setlength{\evensidemargin}{0in}
 \setlength{\topmargin}{-1.5cm}
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+\input{SCMRvin-concordance}
 %\VignetteIndexEntry{Simulating Correlated Binary and Multinomial Responses with SimCorMultRes}
 \date{}
 \maketitle
@@ -37,24 +37,37 @@ $$Y_{it}=j \Leftrightarrow U_{itj}=\max \{U_{it1},\ldots,U_{itJ}\}$$
 correlated nominal multinomial responses that satisfy the marginal baseline category logit model specification in (\ref{MBCLM}) are generated. The above threshold approach extends the principle of maximum random utility (McFadden, 1973) to correlated nominal multinomial responses.\\
 \indent The function \texttt{rmult.bcl()} requires the user to provide the common cluster size $T$ (\texttt{clsize}), the number of nominal response categories $J$ (\texttt{ncategories}), the linear predictor of model~(\ref{MBCLM}) in a matrix form (\texttt{lin.pred}) and the correlation matrix in the multivariate normal distribution of the NORTA method (\texttt{cor.matrix}). The \texttt{lin.pred} argument should be an $N \times (TJ)$ matrix such that the $i$-th row has elements $(\mu_{i11},\ldots,\mu_{i1J},\mu_{i21},\ldots,\mu_{i2J},\cdots,\mu_{iT1},\ldots,\mu_{iTJ})$.\\
 \indent For example, suppose that we want to simulate nominal multinomial responses under a marginal baseline category logit model with $N=500$, $J=4$, $T=3$, $(\beta_{t01},\beta_{t02},\beta_{t03},\beta_{t04})=(\beta_{01},\beta_{02},\beta_{03},\beta_{04})=(1,3,5,0)$ and $\boldsymbol \beta_t=\boldsymbol \beta=(\beta_{1},\beta_{2},\beta_{3},\beta_{4})=(2,4,6,0)$ for all $t$, and a time-stationary covariate for each subject drawn from a standard normal distribution. For the sake of simplicity, suppose that $\{e_{itj}\}$ are independent. The following \textbf{R} code is used to simulate nominal multinomial responses under this sampling scheme
-<<>>=
-library("SimCorMultRes")
-set.seed(1)
-N <- 500
-ncategories <- 4
-clsize <- 3
-Xmat <- matrix(rnorm(N),N,ncategories)
-betas <- c(1,2,3,4,5,6)
-lin.pred <- matrix(c(betas[c(2,4,6)],0),N,4,byrow=TRUE)*Xmat+
-           matrix(c(betas[c(1,3,5)],0),N,4,byrow=TRUE)
-lin.pred <- matrix(lin.pred,N,ncategories*clsize)
-cor.matrix <- diag(1,12)
-Y <- rmult.bcl(clsize,ncategories,lin.pred,cor.matrix)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library("SimCorMultRes")
+> set.seed(1)
+> N <- 500
+> ncategories <- 4
+> clsize <- 3
+> Xmat <- matrix(rnorm(N),N,ncategories)
+> betas <- c(1,2,3,4,5,6)
+> lin.pred <- matrix(c(betas[c(2,4,6)],0),N,4,byrow=TRUE)*Xmat+
++            matrix(c(betas[c(1,3,5)],0),N,4,byrow=TRUE)
+> lin.pred <- matrix(lin.pred,N,ncategories*clsize)
+> cor.matrix <- diag(1,12)
+> Y <- rmult.bcl(clsize,ncategories,lin.pred,cor.matrix)
+\end{Sinput}
+\end{Schunk}
 The simulated clustered nominal multinomial responses for the first six subjects are
-<<>>=
-head(Y$Ysim)
-@
+\begin{Schunk}
+\begin{Sinput}
+> head(Y$Ysim)
+\end{Sinput}
+\begin{Soutput}
+     [,1] [,2] [,3]
+[1,]    3    3    1
+[2,]    2    3    3
+[3,]    4    2    3
+[4,]    3    3    3
+[5,]    3    3    3
+[6,]    1    1    3
+\end{Soutput}
+\end{Schunk}
 \section{Correlated Ordinal Multinomial Responses}
 Generation of correlated ordinal multinomial responses is feasible under either a marginal cumulative link model or a marginal continuation ratio model specification.
 \subsection{Marginal cumulative link model}
@@ -84,19 +97,32 @@ $$\left( {\begin{array}{*{20}c}
    0.15 & 0.85 & 0.50 & 1.00
  \end{array} } \right)$$
 The following \textbf{R} code generates the clustered ordinal multinomial responses under this configuration
-<<>>=
-set.seed(12345)
-N <- 500
-clsize <- 4
-intercepts <- c(-1.5,-0.5,0.5,1.5)
-cor.matrix <- toeplitz(c(1,0.85,0.5,0.15))
-lin.pred <- rsmvnorm(N,toeplitz(c(1,rep(0.85,clsize-1))))
-Y <- rmult.clm(clsize,lin.pred,cor.matrix,intercepts,"probit")
-@
+\begin{Schunk}
+\begin{Sinput}
+> set.seed(12345)
+> N <- 500
+> clsize <- 4
+> intercepts <- c(-1.5,-0.5,0.5,1.5)
+> cor.matrix <- toeplitz(c(1,0.85,0.5,0.15))
+> lin.pred <- rsmvnorm(N,toeplitz(c(1,rep(0.85,clsize-1))))
+> Y <- rmult.clm(clsize,lin.pred,cor.matrix,intercepts,"probit")
+\end{Sinput}
+\end{Schunk}
 The simulated clustered ordinal multinomial responses for the first six subjects are 
-<<>>=
-head(Y$Ysim)
-@
+\begin{Schunk}
+\begin{Sinput}
+> head(Y$Ysim)
+\end{Sinput}
+\begin{Soutput}
+     [,1] [,2] [,3] [,4]
+[1,]    2    2    1    2
+[2,]    3    5    4    3
+[3,]    3    2    3    3
+[4,]    5    4    3    3
+[5,]    4    2    2    3
+[6,]    5    5    5    5
+\end{Soutput}
+\end{Schunk}
 
 \subsection{Marginal continuation ratio model}
 The function \texttt{rmult.crm()} simulates correlated ordinal multinomial responses under the marginal continuation ratio model specification
@@ -120,20 +146,33 @@ $$Y_{it}=j, \text{ given } Y_{it} \geq j \Leftrightarrow U_{itj} \leq \beta_{t0j
 correlated ordinal multinomial responses that satisfy the marginal continuation ratio model specification in (\ref{MCRM}) are generated. This approach extends the latent variable representation described in Tutz (1991) to generating correlated multinomial responses.\\
 \indent The function \texttt{rmult.crm()} requires the user to provide the common cluster size $T$ (\texttt{clsize}), the linear predictor of model~(\ref{MCRM}) excluding the response category intercepts in a matrix form (\texttt{lin.pred}), the correlation matrix of the multivariate normal distribution in the NORTA method (\texttt{cor.matrix}), the category specific intercepts $\beta_{0j}$'s (\texttt{intercepts}) and the cumulative distribution function $F$ (\texttt{link}). The \texttt{lin.pred} argument should be an $N \times T$ matrix such that the $i$-th row has elements $(\mu_{i1},\mu_{i2},\cdots,\mu_{iT})$.\\
 \indent For example, suppose that we want to simulate ordinal multinomial responses under a marginal continuation ratio probit model with $N=500$, $J=5$, $T=4$, $(\beta_{t01},\beta_{t02},\beta_{t03},\beta_{t04})=(\beta_{01},\beta_{02},\beta_{03},\beta_{04})=(-1.5,-0.5,0.5,1.5)$ and $\boldsymbol \beta_t=\beta=1$ for all $t$ and a single time-stationary covariate for each subject drawn from a standard normal distribution. To simplify matters further, suppose that $\{e_{itj}\}$ are independent. The following \textbf{R} code generates the clustered ordinal multinomial responses under this configuration
-<<>>=
-set.seed(1)
-N <- 500
-clsize <- 4
-intercepts <- c(-1.5,-0.5,0.5,1.5)
-cor.matrix <- diag(1,16)
-x <- rnorm(N)
-lin.pred <- matrix(rep(x,clsize),N,clsize,byrow=TRUE)
-Y <- rmult.crm(clsize,lin.pred,cor.matrix,intercepts,link="probit")
-@
+\begin{Schunk}
+\begin{Sinput}
+> set.seed(1)
+> N <- 500
+> clsize <- 4
+> intercepts <- c(-1.5,-0.5,0.5,1.5)
+> cor.matrix <- diag(1,16)
+> x <- rnorm(N)
+> lin.pred <- matrix(rep(x,clsize),N,clsize,byrow=TRUE)
+> Y <- rmult.crm(clsize,lin.pred,cor.matrix,intercepts,link="probit")
+\end{Sinput}
+\end{Schunk}
 The simulated clustered ordinal multinomial responses for the first six subjects are 
-<<>>=
-head(Y$Ysim)
-@
+\begin{Schunk}
+\begin{Sinput}
+> head(Y$Ysim)
+\end{Sinput}
+\begin{Soutput}
+     [,1] [,2] [,3] [,4]
+[1,]    2    5    2    3
+[2,]    5    5    2    4
+[3,]    2    5    5    4
+[4,]    2    4    3    1
+[5,]    5    4    2    5
+[6,]    1    5    5    5
+\end{Soutput}
+\end{Schunk}
 
 \section{Correlated Binary Responses}
 The function \texttt{rbin()} simulates correlated binary responses under the marginal model
@@ -159,19 +198,32 @@ $$\left( {\begin{array}{*{20}c}
    0.15 & 0.85 & 0.50 & 1.00
  \end{array} } \right)$$
 The following \textbf{R} code generates the clustered binary responses under this configuration
-<<>>=
-set.seed(1)
-N <- 500
-clsize <- 4
-intercepts <- 1
-cor.matrix <- toeplitz(c(1,0.85,0.5,0.15))
-lin.pred <- matrix(rnorm(N),N,clsize)
-Y <- rbin(clsize,lin.pred,cor.matrix,intercepts,"probit")   
-@
+\begin{Schunk}
+\begin{Sinput}
+> set.seed(1)
+> N <- 500
+> clsize <- 4
+> intercepts <- 1
+> cor.matrix <- toeplitz(c(1,0.85,0.5,0.15))
+> lin.pred <- matrix(rnorm(N),N,clsize)
+> Y <- rbin(clsize,lin.pred,cor.matrix,intercepts,"probit")   
+\end{Sinput}
+\end{Schunk}
 The simulated clustered binary responses for the first six subjects are 
-<<>>=
-head(Y$Ysim)
-@
+\begin{Schunk}
+\begin{Sinput}
+> head(Y$Ysim)
+\end{Sinput}
+\begin{Soutput}
+     [,1] [,2] [,3] [,4]
+[1,]    1    0    0    0
+[2,]    1    1    1    1
+[3,]    1    1    1    0
+[4,]    1    1    1    1
+[5,]    1    1    1    1
+[6,]    0    0    1    1
+\end{Soutput}
+\end{Schunk}
   \begin{thebibliography}{1}
 \bibitem{}  McCullagh, P. (1980). Regression models for ordinal data. \textit{Journal of the Royal Statistical Society B}, \textbf{42}, 109--142.
 

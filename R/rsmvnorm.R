@@ -10,7 +10,7 @@ function(R=R,cor.matrix=cor.matrix)
  if(!isSymmetric(cor.matrix)) 
     stop("'cor.matrix' must be a symmetric matrix") 
  if(any(diag(cor.matrix)!=1)) 
-    stop("the diagonal elements of 'cor.matrix' must be one")
+    stop("the diagonal elements of 'cor.matrix' must be equal to one")
  if(any(cor.matrix> 1) | any(cor.matrix< -1))
     stop("all the elements of 'cor.matrix' must be on [-1,1]")
  if(any(eigen(cor.matrix,symmetric=TRUE,only.values=TRUE)$values<=0))
@@ -19,4 +19,3 @@ function(R=R,cor.matrix=cor.matrix)
  ans <- matrix(rnorm(R*p),R,p)%*%chol(cor.matrix)
  ans
 }
-

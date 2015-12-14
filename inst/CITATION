@@ -5,10 +5,10 @@ citEntry(entry="Manual",
          author = "Anestis Touloumis",
          year = "2015",
          url = "http://CRAN.R-project.org/package=SimCorMultRes",         
-         note ="R package version 1.3.0", 
+         note ="R package version 1.4.0", 
          textVersion = paste("Touloumis, A. (2015).",
                "SimCorMultRes: Simulates Correlated Multinomial Responses,",
-               "R package version 1.3.0, URL=http://CRAN.R-project.org/package=SimCorMultRes.")
+               "R package version 1.4.0, URL=http://CRAN.R-project.org/package=SimCorMultRes.")
          )
 
 

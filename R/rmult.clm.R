@@ -1,5 +1,5 @@
 rmult.clm <-
-function(clsize,lin.pred,corr,cuts,link="probit")
+function(clsize,lin.pred,cor.matrix,intercepts,link="probit")
 {
  if(!is.numeric(clsize) | clsize < 2)
      stop("'clsize' must be greater than or equal to two")
@@ -8,57 +8,51 @@ function(clsize,lin.pred,corr,cuts,link="probit")
  if(!is.numeric(lin.pred))
      stop("'lin.pred' must be a numeric")
  if(ncol(lin.pred)!=clsize) 
-     stop("the matrix 'lin.pred' must have ",clsize,"columns")
+     stop("the matrix 'lin.pred' must have ",clsize," columns")
  R <- nrow(lin.pred)
- if(!is.vector(cuts))
-    stop("'cuts' must be a list or a vector")
- if(!is.numeric(cuts))
-    stop("'cuts' must be numeric")
- if(cuts[1]!=-Inf)
-   stop("'-Inf' must be the first cutpoint")
- if(cuts[length(cuts)]!=Inf)
-   stop("'Inf' must be the last cutpoint")
- if(length(cuts) < 4)
-   stop("'cuts' must have at least four elements")
- if(any(diff(cuts)<=0)) 
-    stop("'cuts' must be increasing") 
+ if(!is.vector(intercepts) & !is.matrix(intercepts))
+    stop("'intercepts' must be a vector or a matrix")
+ if(!is.numeric(intercepts))
+    stop("'intercepts' must be numeric")
+ if(is.vector(intercepts)) {
+   if(length(intercepts)==1)
+     stop("'intercepts' must have at least 2 elements")
+   if(any(diff(intercepts)<=0)) 
+     stop("'intercepts' must be increasing") 
+   ncategories <- length(intercepts)+1
+   intercepts <- matrix(intercepts,clsize,ncategories-1,TRUE)
+   intercepts <- cbind(-Inf,intercepts,Inf)
+ } else {
+   ncategories <- ncol(intercepts)+1
+   intercepts <- cbind(-Inf,intercepts,Inf)
+   for (i in 1:clsize){
+     if(any(diff(intercepts[i,])<=0)) 
+       stop("'intercepts' must be increasing at each row") 
+   }
+ }
  links <- c("probit","logit","cloglog","cauchit")
  if(!is.element(link,links)) 
    stop("'link' must be either 'probit','logit','cloglog' or'cauchit'") 
  distr <- switch(link,"probit"="normal","logit"="logistic",
                        "cloglog"="extreme","cauchit"="cauchit")
- if(!is.numeric(corr)) 
-    stop("'corr' must be numeric")
- if(!is.matrix(corr) & !is.vector(corr))
-    stop("'corr' must be matrix or a vector")
- if(is.matrix(corr))
-   {
-  if(ncol(corr)!=clsize | nrow(corr)!=clsize) 
-    stop("'corr' must be a ",clsize,"x",clsize," matrix")
-  if(!isSymmetric(corr)) 
-    stop("'corr' must be a symmetric matrix") 
-  if(any(diag(corr)!=1)) 
-    stop("the diagonal elements of 'corr' must be one")
-  if(any(corr>1) | any(corr< -1))
-    stop("all the elements of 'corr' must be on [-1,1]")
-  if(any(eigen(corr,symmetric=TRUE,only.values=TRUE)$values<=0))
-    stop("'corr' must be positive definite")
-  err <- rnorta(R=R,cor.matrix=corr,distr=distr)
-   } else {
- corr <- corr[1]
- if(distr=="normal" | distr=="cauchit") 
-    stop("'corr' must be a matrix when 'link'='probit' or 'cauchit'")
- if(any(corr>1) | any(corr<=0))
-     stop("'corr' must be on [0,1)") 
- if(distr=="extreme") 
-    err <- rmvevd(n=R,dep=sqrt(1-corr),d=clsize) else {
-    err <- rmvevd(n=R,dep=sqrt(1-corr),d=clsize)-
-           rmvevd(n=R,dep=sqrt(1-corr),d=clsize)
-         }
- corr <- toeplitz(c(1,rep(corr,clsize-1)))
- }
+ if(!is.numeric(cor.matrix)) 
+    stop("'cor.matrix' must be numeric")
+ if(!is.matrix(cor.matrix))
+    stop("'cor.matrix' must be matrix")
+ if(ncol(cor.matrix)!=clsize | nrow(cor.matrix)!=clsize) 
+    stop("'cor.matrix' must be a ",clsize,"x",clsize," matrix")
+ if(!isSymmetric(cor.matrix)) 
+    stop("'cor.matrix' must be a symmetric matrix") 
+ if(any(diag(cor.matrix)!=1)) 
+    stop("the diagonal elements of 'cor.matrix' must be one")
+ if(any(cor.matrix>1) | any(cor.matrix< -1))
+    stop("all the elements of 'cor.matrix' must be on [-1,1]")
+ if(any(eigen(cor.matrix,symmetric=TRUE,only.values=TRUE)$values<=0))
+    stop("'cor.matrix' must be positive definite")
+ err <- rnorta(R=R,cor.matrix=cor.matrix,distr=distr)
  U <- if(distr=="extreme") lin.pred+err else -lin.pred+err
- Ysim <- matrix(cut(U,cuts,labels=FALSE),R,clsize)
- if(distr=="extreme") Ysim <- max(Ysim)-Ysim+1
- list(Ysim=Ysim,correlation=corr,rlatent=err)
+ Ysim <- matrix(0,R,clsize)
+ for(i in 1:clsize) Ysim[,i] <- cut(U[,i],intercepts[i,],labels=FALSE)
+ if(distr=="extreme") Ysim <- ncategories-Ysim+1
+ list(Ysim=Ysim,correlation=cor.matrix,rlatent=err)
  }

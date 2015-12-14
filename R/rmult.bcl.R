@@ -14,29 +14,26 @@ function(clsize,ncategories,lin.pred,cor.matrix)
  if(ncol(lin.pred)!= dims.lp) 
      stop("'lin.pred' must have ",dims.lp," columns")
  R <- nrow(lin.pred)
+ if(!is.matrix(cor.matrix)) 
+   stop("'cor.matrix' must be a matrix")
  if(!is.numeric(cor.matrix)) 
      stop("'cor.matrix' must be numeric")
- cor.matrix <- as.matrix(cor.matrix)
- if(ncol(cor.matrix)!=dims.lp) 
+ if(ncol(cor.matrix)!=dims.lp | nrow(cor.matrix)!=dims.lp) 
     stop("'cor.matrix' must be a ",dims.lp,"x",dims.lp," matrix")
  if(!isSymmetric(cor.matrix))
      stop("'cor.matrix' must be a symmetric matrix")
  for(i in 1:clsize){
  diag.index <- 1:ncategories+(i-1)*ncategories
- cor.matrix[diag.index,diag.index]<- diag(1,ncategories)
+ cor.matrix[diag.index,diag.index] <- diag(1,ncategories)
   }
  if(any(cor.matrix>1) | any(cor.matrix< -1))
      stop("all the elements of 'cor.matrix' must be on [-1,1]")
  if(any(eigen(cor.matrix,symmetric=TRUE,only.values=TRUE)$values<=0))
-     stop("'cor.matrix' must respect the local independence of the alternatives and it must be a positive definite matrix")
+    stop("'cor.matrix' must respect the local independence of the alternatives and must be positive definite")
  err <- rnorta(R,cor.matrix=cor.matrix,distr="extreme")
  U <- lin.pred + err
  U <- matrix(as.vector(t(U)),nrow=clsize*R,ncol=ncategories,TRUE)
  Ysim <- apply(U,1,which.max)
  Ysim <- matrix(Ysim,ncol=clsize,byrow=TRUE)
- if(!is.matrix(cor.matrix)) 
-    cor.matrix <- toeplitz(
-                  c(1,rep(0,ncategories-1),
-                  rep(c(cor.matrix,rep(0,ncategories-1)),clsize-1)))
  list(Ysim=Ysim,correlation=cor.matrix,rlatent=err)
  }

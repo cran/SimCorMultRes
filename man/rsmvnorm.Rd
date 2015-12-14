@@ -1,10 +1,10 @@
 \name{rsmvnorm}
 \alias{rsmvnorm}
 \title{
-Simulating Continuous Random Vectors From A Multivariate Normal Distribution
+Simulating Continuous Random Vectors from a Multivariate Normal Distribution
 }
 \description{
-This function simulates continuous random vectors from a multivariate normal distribution such that the marginal distributions are standard normal.
+Utility function to simulate continuous random vectors from a multivariate normal distribution such that all the marginal distributions are univariate standard normal.
 }
 \usage{
 rsmvnorm(R = R, cor.matrix = cor.matrix)
