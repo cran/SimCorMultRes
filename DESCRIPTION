@@ -1,18 +1,17 @@
 Package: SimCorMultRes
 Type: Package
 Title: Simulates Correlated Multinomial Responses
-Version: 1.4.0
-Date: 2015-12-15
-Author: Anestis Touloumis
-Maintainer: Anestis Touloumis <A.Touloumis@brighton.ac.uk>
+Description: Simulates correlated multinomial responses conditional on a marginal model specification.
+Version: 1.4.1
 Depends: R(>= 2.15.0)
-Imports: evd, stats
-Suggests: multgee(>= 1.2)
-Description: Simulates correlated multinomial responses by utilizing threshold
-    approaches under a marginal model specification.
+Imports: stats, methods, evd
+Suggests: multgee(>= 1.2), gee
+Date: 2016-07-19
+Authors@R: c(person("Anestis", "Touloumis", role = c("aut", "cre"), email = "A.Touloumis@brighton.ac.uk"))
+Author: Anestis Touloumis [aut, cre]
+Maintainer: Anestis Touloumis <A.Touloumis@brighton.ac.uk>
 License: GPL-3
-LazyLoad: yes
 NeedsCompilation: no
-Packaged: 2015-12-14 17:09:15 UTC; at539
+Packaged: 2016-07-19 18:04:08 UTC; Anestis
 Repository: CRAN
-Date/Publication: 2015-12-14 18:43:03
+Date/Publication: 2016-07-19 22:27:21

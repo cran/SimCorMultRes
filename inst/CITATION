@@ -1,14 +1,14 @@
-citHeader("To cite the R package 'ShrinkCovMat' in publications, please use:")
+citHeader("To cite the R package 'SimCorMultRes' in publications, please use:")
  
 citEntry(entry="Manual",
          title = "SimCorMultRes: Simulates Correlated Multinomial Responses",
          author = "Anestis Touloumis",
-         year = "2015",
+         year = "2016",
          url = "http://CRAN.R-project.org/package=SimCorMultRes",         
-         note ="R package version 1.4.0", 
-         textVersion = paste("Touloumis, A. (2015).",
+         note ="R package version 1.4.1", 
+         textVersion = paste("Touloumis, A. (2016)",
                "SimCorMultRes: Simulates Correlated Multinomial Responses,",
-               "R package version 1.4.0, URL=http://CRAN.R-project.org/package=SimCorMultRes.")
+               "R package version 1.4.1, URL=http://CRAN.R-project.org/package=SimCorMultRes.")
          )
 
 

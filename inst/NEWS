@@ -1,3 +1,12 @@
+Version 1.4.1 [2016-07-19]
+ * Replaced the lin.pred argument in the core functions with three easier to handle arguments (betas, xformula and xdata).
+ * Increased the flexibility of the implementation of the NORTA method in the function rnorta.
+ * Introduced the rlatent argument in the core functions to allow user-defined simulated values for the latent variables.   
+ * Updated R code.
+ * Updated CITATION file.
+ * Updated vignette.
+ * Updated documentation.
+
 Version 1.4.0 [2015-12-15]
  * Added the rbin function to simulate correlated binary responses.
  * Updated CITATION file.

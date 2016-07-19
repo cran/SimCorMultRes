@@ -1,63 +1,77 @@
 \name{rmult.clm}
 \alias{rmult.clm}
 \title{
-Simulating Correlated Ordinal Multinomial Responses under a Marginal Cumulative Link Model 
+Simulating Correlated Ordinal Responses Conditional on a Marginal Cumulative Link Model Specification
 }
 \description{
-Simulates correlated ordinal multinomial responses assuming that a cumulative link model holds for the marginal probabilities.
+Simulates correlated ordinal responses assuming a cumulative link model for the marginal probabilities.
 }
 \usage{
-rmult.clm(clsize, lin.pred, cor.matrix, intercepts, link = "probit")
+rmult.clm(clsize, intercepts, betas, xformula, xdata, link, cor.matrix, rlatent = NULL)
 }
 \arguments{
   \item{clsize}{
 integer indicating the common cluster size.
 }
-  \item{lin.pred}{
-matrix with \code{clsize} columns. See details for more info.
-}
-  \item{cor.matrix}{
-matrix indicating the correlation matrix of the multivariate normal distribution in the NORTA method.
-}
   \item{intercepts}{
-numerical vector or matrix containing the intercepts of the marginal cumulative link model. See details for more info.
+numerical vector or matrix containing the intercepts of the marginal cumulative link model.
+}
+  \item{betas}{
+numerical vector or matrix containing the value of the marginal regression parameter vector (excluding \code{intercepts}).
+}
+  \item{xformula}{
+formula expression as in other marginal regression models but without including a response variable.  
+}
+  \item{xdata}{
+optional data frame containing the variables provided in \code{xformula}.
 }
   \item{link}{
-character string indicating the link function of the cumulative link model. Options include \code{"probit"}, \code{"logit"}, \code{"cloglog"} or \code{"cauchit"}.
+character string indicating the link function in the marginal cumulative link model. Options include \code{"probit"}, \code{"logit"}, \code{"cloglog"} or \code{"cauchit"}. Required when \code{rlatent = NULL}.
+}
+  \item{cor.matrix}{
+matrix indicating the correlation matrix of the multivariate normal distribution when the NORTA method is employed (\code{rlatent = NULL}).
+}
+ \item{rlatent}{
+matrix with \code{clsize} columns containing realizations of the latent random vectors when the NORTA method is not preferred. See details for more info.
 }
 }
 \details{
 The assumed marginal cumulative link model is  
-\deqn{Pr(Y_{it}\le j |x_{it})=F(\beta_{t0j} +\beta^{'}_{t} x_{it})}
-where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th multinomial response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{t0j}} is the \eqn{j}-th category specific intercept and \eqn{\beta^{'}_{t}} is the regression parameter vector corresponding to the \eqn{t}-th measurement occasion.
+\deqn{Pr(Y_{it}\le j |x_{it})=F(\beta_{tj0} +\beta^{'}_{t} x_{it})}
+where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th ordinal response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The multinomial response \eqn{Y_{it}} takes the value \eqn{j} if and only if the corresponding latent random variable lies on \eqn{(\beta_{t0(j-1)}-\beta^{'}_{t}x_{it},\beta_{t0j}-\beta^{'}_{t}x_{it}]}. See vignette for more info.
+The ordinal response \eqn{Y_{it}} is obtained by extending the approach of \cite{McCullagh (1980)}. See vignette for more info.
 
-The sample is equal to the number of rows in \code{lin.pred}. Row \eqn{i} corresponds to subject \eqn{i}. The (\eqn{i,t})-th element of \code{lin.pred} equals \eqn{\beta^{'}_{t} x_{it}}.
+When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that row \eqn{t} contains the category-specific intercepts at the \eqn{t}-th measurement occasion.
 
-When \eqn{\beta_{0tj}=\beta_{0j}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that \eqn{t} contains the category specific intercepts at the \eqn{t}-th measurement occasion.
+\code{betas} should be provided as a numeric vector only when \eqn{\beta_{t}=\beta} for all \eqn{t}. Otherwise, \code{betas} must be provided as a numeric matrix with \code{clsize} rows such that the \eqn{t}-th row contains the value of \eqn{\beta_{t}}. In either case, \code{betas} should reflect the order of the terms implied by \code{xformula}.
+
+The appropriate use of \code{xformula} is \code{xformula = ~ covariates}, where \code{covariates} indicate the linear predictor as in other marginal regression models.
+
+The optional argument \code{xdata} should be provided in ``long'' format.
+
+The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e_{it}} in the threshold approach described in the vignette. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, element (\eqn{i,t}) of \code{rlatent} represents the realization of \eqn{e_{it}}.
 }
 \value{
-\item{Ysim}{the correlated ordinal multinomial responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
-\item{correlation}{the correlation matrix of the multivariate normal distribution in the NORTA method.}
-\item{rlatent}{the latent random vectors.}
+Returns a list that has components:
+\item{Ysim}{the simulated ordinal responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
+\item{simdata}{a data frame that includes the simulated response variables (y), the covariates specified by \code{xformula}, subjects' identities (id) and the corresponding measurement occasions (time).}
+\item{rlatent}{the latent random variables denoted by \eqn{e_{it}} in the vignette.}
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.
 
-Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transacions on Systems, Man and Cybernetics}, \bold{5}, 557--561.
+Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
 
-McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B}, \bold{42}, 109--142.
+McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B} \bold{42}, 109--142.
 
-Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics}, \bold{69}, 633--640.
+Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics} \bold{69}, 633--640.
 }
 \author{
 Anestis Touloumis
 }
 \seealso{
-For simulating correlated ordinal multinomial responses see also \code{rmult.crm}.
-
-For simulating correlated nominal multinomial responses use \code{rmult.bcl} and for simulating correlated binary responses use \code{rbin}.
+\code{\link{rmult.bcl}} for simulating correlated nominal responses, \code{\link{rmult.crm}} for simulating correlated ordinal responses and \code{\link{rbin}} for simulating correlated binary responses.
 }
 \examples{
 ## See vignette for the sampling scheme.
@@ -65,17 +79,22 @@ set.seed(12345)
 N <- 500
 clsize <- 4
 intercepts <- c(-1.5, -0.5, 0.5, 1.5)
+betas <- matrix(c(1, 2, 3, 4), 4, 1)
+x <- rep(rnorm(N), each = clsize)
 cor.matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
-lin.pred <- rsmvnorm(N, toeplitz(c(1, rep(0.85, clsize-1))))
-Y <- rmult.clm(clsize, lin.pred, cor.matrix, intercepts, "probit")$Ysim
-data <- cbind(c(t(Y)), c(t(lin.pred)))
-data <- data.frame(data)
-data$id <- rep(1:N, each=clsize)
-data$time <- rep(1:clsize, N)
-colnames(data) <- c("y", "x", "id", "time")
+CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas, 
+    xformula = ~x, cor.matrix = cor.matrix, link = "probit")
 
-## Fit a GEE model (Touloumis et al., 2013) to estimate the regression coefficients.
+## Same sampling scheme except that the parameter vector is now
+## time-stationary.
+set.seed(12345)
+x <- rep(rnorm(N), each = clsize)
+CorOrdRes <- rmult.clm(clsize = clsize, betas = 1, xformula = ~x, cor.matrix = toeplitz(c(1, 
+    0.85, 0.5, 0.15)), intercepts = c(-1.5, -0.5, 0.5, 1.5), link = "probit")
+
+## Fit a GEE model (Touloumis et al., 2013) to estimate the regression
+## coefficients.
 library(multgee)
-fitmod <- ordLORgee(y~x, data=data, id=id, repeated=time, link="probit", IM="cholesky")
+fitmod <- ordLORgee(y ~ x, id = id, repeated = time, link = "probit", data = CorOrdRes$simdata)
 coef(fitmod)
 }
