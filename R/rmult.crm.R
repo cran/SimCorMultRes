@@ -13,11 +13,20 @@ rmult.crm <- function(clsize = clsize, intercepts = intercepts, betas = betas, x
             stop("The number of rows in 'betas' should be equal to 'clsize'")
         betas <- c(t(betas))
     }
-    lpformula <- as.formula(xformula)
-    lpformula <- update(lpformula, ~. - 1)
-    if (length(paste0(attr(terms(lpformula), "variables"))) == 1) 
-        stop("No covariates were found in 'formula' ")
-    Xmat <- model.matrix(lpformula, data = xdata)
+  lpformula <- as.formula(xformula)
+  if (length(paste0(attr(terms(lpformula), "variables"))) == 1) 
+    stop("No covariates were found in 'formula' ")
+  Xmat <- model.matrix(lpformula, data = xdata)
+  if (attr(terms(lpformula), "intercept") == 1) {
+    Xmat <- matrix(Xmat[,-1],ncol=ncol(Xmat)-1)
+  } else{
+    att <- attr(Xmat, "assign")
+    factor.columns <- unique(att[duplicated(att)])
+    if (length(factor.columns) >= 1) {
+      Xmat <- Xmat[, -match(factor.columns[1], att)]
+      Xmat <- data.matrix(Xmat)
+    }
+  }
     if (length(betas) != (clsize) * ncol(Xmat)) 
         stop("The length of 'betas' does not match with the number of covariates")
     lin.pred <- matrix(betas, nrow = nrow(Xmat), ncol = ncol(Xmat), byrow = TRUE) * Xmat

@@ -37,21 +37,21 @@ The assumed marginal baseline category logit model is
 \deqn{log \frac{Pr(Y_{it}=j |x_{it})}{Pr(Y_{it}=J |x_{it})}=(\beta_{tj0}-\beta_{tJ0}) + (\beta^{'}_{tj}-\beta^{'}_{tJ}) x_{it}=\beta^{*}_{tj0}+ \beta^{*'}_{tj} x_{it}}
 For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th nominal response and \eqn{x_{it}} is the associated covariates vector. Also \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The nominal response \eqn{Y_{it}} is obtained by extending the principle of maximum random utility (\cite{McFadden, 1974}). See vignette for more info.
+The nominal response \eqn{Y_{it}} is obtained by extending the principle of maximum random utility (\cite{McFadden, 1974}). See \cite{Touloumis (2016)} for more info.
 
-\code{betas} should be provided as a numeric vector only when \eqn{\beta_{tj0}=\beta_{j0}} and \eqn{\beta_{tj}=\beta_j} for all \eqn{t}. Otherwise, \code{betas} must be provided as a numeric matrix with \code{clsize} rows such that the \eqn{t}-th row contains the value of (\eqn{\beta_{t1},\beta_{t2},..., \beta_{tJ}}). In either case, \code{betas} should reflect the order of the terms implied by \code{xformula}.
+\code{betas} should be provided as a numeric vector only when \eqn{\beta_{tj0}=\beta_{j0}} and \eqn{\beta_{tj}=\beta_j} for all \eqn{t}. Otherwise, \code{betas} must be provided as a numeric matrix with \code{clsize} rows such that the \eqn{t}-th row contains the value of (\eqn{\beta_{t10},\beta_{t1},\beta_{t20},\beta_{t2},...,\beta_{tJ0}, \beta_{tJ}}). In either case, \code{betas} should reflect the order of the terms implied by \code{xformula}.
 
 The appropriate use of \code{xformula} is \code{xformula = ~ covariates}, where \code{covariates} indicate the linear predictor as in other marginal regression models.
 
 The optional argument \code{xdata} should be provided in ``long'' format.
 
-The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e_{itj}} in the threshold approach described in the vignette. In this case, the algorithm forces \code{cor.matrix} to respect the assumption of choice independence. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject \eqn{i} and columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the realization of \eqn{e_{it1},...,e_{itJ}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}. 
+The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e^{NO}_{itj}} in \cite{Touloumis (2016)}. In this case, the algorithm forces \code{cor.matrix} to respect the assumption of choice independence. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject \eqn{i} and columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the realization of \eqn{e^{NO}_{it1},...,e^{NO}_{itJ}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}. 
 }
 \value{
 Returns a list that has components:
 \item{Ysim}{the simulated nominal responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
 \item{simdata}{a data frame that includes the simulated response variables (y), the covariates specified by \code{xformula}, subjects' identities (id) and the corresponding measurement occasions (time).}
-\item{rlatent}{the latent random variables denoted by \eqn{e_{it}} in the vignette.}
+\item{rlatent}{the latent random variables denoted by \eqn{e^{NO}_{it}} in \cite{Touloumis (2016)}.}
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.

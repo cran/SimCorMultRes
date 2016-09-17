@@ -26,9 +26,9 @@ list of \code{ncol(cor.matrix)} lists indicating the parameter values of the qua
 \details{
 Checks are made to ensure that \code{cor.matrix} is a positive definite correlation matrix. The positive definiteness of \code{cor.matrix} is assessed via eigenvalues.
 
-The \eqn{t}-th character string in \code{distr} indicates the quantile function of the \eqn{t}-th marginal distribution. See \code{\link{Distributions}} for the most common distributions. Quantile functions supported by other R packages are allowed provided that these packages have been uploaded first. However, note that no checks are made to ensure that the character strings in \code{distr} correspond to valid names of quantile functions. 
+The \eqn{t}-th character string in \code{distr} indicates the quantile function of the \eqn{t}-th marginal distribution. See \code{\link{Distributions}} for the most common distributions. Quantile functions supported by other R packages are allowed provided that these packages have been uploaded first. However, note that no checks are made to ensure that the character strings in \code{distr} correspond to valid names of quantile functions.
 
-If \code{qparameters = NULL} then the default parameter values for the quantile functions specified by \code{distr} are used. Otherwise, \code{qparameters} should be provided as a list of \code{ncol(cor.matrix)} lists such that the \eqn{t}-th list contains the desired parameter values of the \eqn{t}-th quantile function.      
+If \code{qparameters = NULL} then the default parameter values for the quantile functions specified by \code{distr} are used. Otherwise, \code{qparameters} should be provided as a list of \code{ncol(cor.matrix)} lists such that the \eqn{t}-th list contains the desired parameter values of the \eqn{t}-th quantile function.
 }
 
 
@@ -42,6 +42,8 @@ Anestis Touloumis
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.
 
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
+
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
 }
 
 \examples{

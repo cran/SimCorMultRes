@@ -40,7 +40,7 @@ The assumed marginal cumulative link model is
 \deqn{Pr(Y_{it}\le j |x_{it})=F(\beta_{tj0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th ordinal response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The ordinal response \eqn{Y_{it}} is obtained by extending the approach of \cite{McCullagh (1980)}. See vignette for more info.
+The ordinal response \eqn{Y_{it}} is obtained by extending the approach of \cite{McCullagh (1980)}. See \cite{Touloumis (2016)} for more info.
 
 When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that row \eqn{t} contains the category-specific intercepts at the \eqn{t}-th measurement occasion.
 
@@ -50,13 +50,14 @@ The appropriate use of \code{xformula} is \code{xformula = ~ covariates}, where 
 
 The optional argument \code{xdata} should be provided in ``long'' format.
 
-The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e_{it}} in the threshold approach described in the vignette. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, element (\eqn{i,t}) of \code{rlatent} represents the realization of \eqn{e_{it}}.
+The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e^{O1}_{it}} in \cite{Touloumis (2016)}. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, element (\eqn{i,t}) of \code{rlatent} represents the realization of \eqn{e^{O1}_{it}}.
+
 }
 \value{
 Returns a list that has components:
 \item{Ysim}{the simulated ordinal responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
 \item{simdata}{a data frame that includes the simulated response variables (y), the covariates specified by \code{xformula}, subjects' identities (id) and the corresponding measurement occasions (time).}
-\item{rlatent}{the latent random variables denoted by \eqn{e_{it}} in the vignette.}
+\item{rlatent}{the latent random variables denoted by \eqn{e^{O1}_{it}} in \cite{Touloumis (2016)}.}
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.
@@ -64,6 +65,8 @@ Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vect
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
 
 McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B} \bold{42}, 109--142.
+
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
 
 Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics} \bold{69}, 633--640.
 }

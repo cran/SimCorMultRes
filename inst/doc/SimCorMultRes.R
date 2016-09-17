@@ -1,7 +1,7 @@
 ### R code from vignette source 'SimCorMultRes.Rnw'
 
 ###################################################
-### code chunk number 1: SimCorMultRes.Rnw:45-57
+### code chunk number 1: SimCorMultRes.Rnw:46-58
 ###################################################
 library(SimCorMultRes)
 set.seed(1)
@@ -18,13 +18,13 @@ CorNorRes <- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas
 
 
 ###################################################
-### code chunk number 2: SimCorMultRes.Rnw:60-61
+### code chunk number 2: SimCorMultRes.Rnw:61-62
 ###################################################
 head(CorNorRes$Ysim)
 
 
 ###################################################
-### code chunk number 3: SimCorMultRes.Rnw:64-69
+### code chunk number 3: SimCorMultRes.Rnw:65-70
 ###################################################
 library(evd)
 rlatent <- rmvevd(n = N, dep = 1, model = "log", d = clsize * ncategories)
@@ -34,7 +34,7 @@ head(CorNorRes$Ysim)
 
 
 ###################################################
-### code chunk number 4: SimCorMultRes.Rnw:106-115
+### code chunk number 4: SimCorMultRes.Rnw:107-116
 ###################################################
 set.seed(12345)
 N <- 500
@@ -48,13 +48,13 @@ CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas,
 
 
 ###################################################
-### code chunk number 5: SimCorMultRes.Rnw:118-119
+### code chunk number 5: SimCorMultRes.Rnw:119-120
 ###################################################
 head(CorOrdRes$Ysim)
 
 
 ###################################################
-### code chunk number 6: SimCorMultRes.Rnw:146-155
+### code chunk number 6: SimCorMultRes.Rnw:147-156
 ###################################################
 set.seed(1)
 N <- 500
@@ -68,13 +68,13 @@ CorOrdRes <- rmult.crm(clsize = clsize, intercepts = intercepts, betas = 1,
 
 
 ###################################################
-### code chunk number 7: SimCorMultRes.Rnw:158-159
+### code chunk number 7: SimCorMultRes.Rnw:159-160
 ###################################################
 head(CorOrdRes$Ysim)
 
 
 ###################################################
-### code chunk number 8: SimCorMultRes.Rnw:193-202
+### code chunk number 8: SimCorMultRes.Rnw:194-203
 ###################################################
 set.seed(123)
 N <- 5000
@@ -88,7 +88,7 @@ CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
 
 
 ###################################################
-### code chunk number 9: SimCorMultRes.Rnw:205-208
+### code chunk number 9: SimCorMultRes.Rnw:206-209
 ###################################################
 library(gee)
 binGEEmod <- gee(y ~ x, family = binomial("probit"), id = id, data = CorBinRes$simdata)
@@ -96,7 +96,7 @@ summary(binGEEmod)
 
 
 ###################################################
-### code chunk number 10: SimCorMultRes.Rnw:211-220
+### code chunk number 10: SimCorMultRes.Rnw:212-221
 ###################################################
 set.seed(123)
 library(evd)
@@ -110,7 +110,7 @@ summary(binGEEmod)
 
 
 ###################################################
-### code chunk number 11: SimCorMultRes.Rnw:223-224
+### code chunk number 11: SimCorMultRes.Rnw:224-225
 ###################################################
 citation("SimCorMultRes")
 

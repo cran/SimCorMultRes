@@ -17,7 +17,7 @@ For a nominal response scale, the multinomial responses are simulated conditiona
 
 Correlated binary responses are simulated using the function \code{\link{rbin}}. 
 
-The threshold approaches that give rise to the implemented marginal models are described in the vignette.
+The threshold approaches that give rise to the implemented marginal models are described in the vignette and in \cite{Touloumis (2016)}.
 }
 \author{
 Anestis Touloumis  
@@ -34,6 +34,8 @@ Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with spe
 McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B} \bold{42}, 109--142.
 
 McFadden, D. (1974) \emph{Conditional logit analysis of qualitative choice behavior}. New York: Academic Press, 105--142.
+
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
 
 Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics} \bold{69}, 633--640.
 

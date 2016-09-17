@@ -3,6 +3,7 @@
 \author{Anestis Touloumis}
 \usepackage{Sweave}
 \usepackage{amsmath}
+\usepackage{natbib}
 \usepackage{graphicx, verbatim}
 \setlength{\textwidth}{6.5in} 
 \setlength{\textheight}{9in}
@@ -16,9 +17,9 @@
 \date{}
 \maketitle
 \section{Introduction}
-The \textbf{R} package \textbf{SimCorMultRes} is suitable for simulation of correlated multinomial responses (with three or more nominal or ordinal response categories) and of correlated binary responses conditional on a model specification for the marginal probabilities. The simulation methods employed herein are extending existing threshold approaches that give rise to regression models for independent binary, nominal or ordinal responses. This vignette describes briefly the threshold approaches that give rise to the implemented marginal models and offers simple examples that illustrate the use of \textbf{SimCorMultRes}.
+The \textbf{R} package \textbf{SimCorMultRes} is suitable for simulation of correlated multinomial responses (with three or more nominal or ordinal response categories) and of correlated binary responses conditional on a model specification for the marginal probabilities. The simulation methods employed herein are extending existing threshold approaches that give rise to regression models for independent binary, nominal or ordinal responses. This vignette describes briefly the methods presented in Touloumis (2016) and offers simple examples that illustrate the use of \textbf{SimCorMultRes}. Additional examples can be found in Touloumis (2016). 
 \section{Notation}
-\indent Let $Y_{it}$ be the binary or multinomial response for subject $i$ ($i=1,\ldots,N$) at the measurement occasion $t$ ($t=1,\ldots,T$), and let $\mathbf {x}_{it}$ be the associated covariates vector. Note that we assume that $Y_{it} \in \{0,1\}$ for binary responses and $Y_{it} \in \{1,2,\ldots,J\geq 3\}$ for multinomial responses. 
+\indent Let $Y_{it}$ be the binary or multinomial response for subject $i$ ($i=1,\ldots,N$) at the measurement occasion $t$ ($t=1,\ldots,T$), and let $\mathbf {x}_{it}$ be the associated covariates vector. Note that we assume $Y_{it} \in \{0,1\}$ for binary responses and $Y_{it} \in \{1,2,\ldots,J\geq 3\}$ for multinomial responses. 
 \section{Correlated Nominal Responses}
 The function \texttt{rmult.bcl()} simulates correlated nominal responses under the marginal baseline-category logit model
 \begin{equation}
@@ -27,16 +28,16 @@ The function \texttt{rmult.bcl()} simulates correlated nominal responses under t
 \end{equation}
 where $\beta_{tj0}$ is the $j$-th category-specific intercept at the $t$-th measurement occasion and $\boldsymbol{\beta}_{tj}$ is the $j$-th category-specific parameter vector at the $t$-th measurement occasion. The popular identifiability constraints $\beta_{tJ0}=0$ and $\boldsymbol{\beta}_{tJ}=\mathbf {0}$ for all $t$ imply that $\beta^{\ast}_{tj0}=\beta_{tj0}$ and $\boldsymbol {\beta}^{\ast}_{tj}=\boldsymbol{\beta}_{tj}$ for all $j=1,\ldots,J-1$.\\
 \indent Define 
-$$U_{itj}=\beta_{tj0}+\boldsymbol{\beta}_{tj}^{\prime} \mathbf {x}_{it}+e_{itj},$$
-where the random variables $\{e_{itj}\}$ satisfy the following conditions: 
+$$U^{NO}_{itj}=\beta_{tj0}+\boldsymbol{\beta}_{tj}^{\prime} \mathbf {x}_{it}+e^{NO}_{itj},$$
+where the random variables $\{e^{NO}_{itj}\}$ satisfy the following conditions: 
 \begin{enumerate}
-\item Marginally, $e_{itj}$ follows a standard extreme value distribution for all $i$, $t$ and $j$.
-\item Random variables associated with different subjects are independent, i.e., $e_{i_1t_1j_1}$ and $e_{i_2t_2j_2}$ are independent provided that $i_1 \neq i_2$.
-\item Category-specific random variables for each subject at a given measurement occasion are independent (assumption of choice independence), i.e., $e_{itj_1}$ and $e_{itj_2}$ are independent provided that $j_1\neq j_2$.
-\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e_{it_1j_1}$ and $e_{it_2j_2}$ may be correlated provided that $t_1 \neq t_2$.
+\item Marginally, $e^{NO}_{itj}$ follows a standard extreme value distribution for all $i$, $t$ and $j$.
+\item Random variables associated with different subjects are independent, i.e., $e^{NO}_{i_1t_1j_1}$ and $e^{NO}_{i_2t_2j_2}$ are independent provided that $i_1 \neq i_2$.
+\item Category-specific random variables for each subject at a given measurement occasion are independent (assumption of choice independence), i.e., $e^{NO}_{itj_1}$ and $e^{NO}_{itj_2}$ are independent provided that $j_1\neq j_2$.
+\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e^{NO}_{it_1j_1}$ and $e^{NO}_{it_2j_2}$ may be correlated provided that $t_1 \neq t_2$.
 \end{enumerate}
-It can be shown that using the threshold
-$$Y_{it}=j \Leftrightarrow U_{itj}=\max \{U_{it1},\ldots,U_{itJ}\}$$
+It can be shown (Touloumis, 2016) that using the threshold
+$$Y_{it}=j \Leftrightarrow U^{NO}_{itj}=\max \{U^{NO}_{it1},\ldots,U^{NO}_{itJ}\}$$
 correlated nominal responses that satisfy the marginal baseline-category logit model (\ref{MBCLM}) are generated.\\
 \indent For example, suppose that we want to simulate nominal responses from the marginal baseline-category logit model
 \begin{equation*}
@@ -81,15 +82,15 @@ where $F$ is a cumulative distribution function (cdf), $\beta_{tj0}$ is the $j$-
 $$-\infty=\beta_{t00} <\beta_{t10} < \beta_{t20} < \cdots < \beta_{t(J-1)0}< \beta_{tJ0}=\infty$$
 for all $t$.\\
 \indent Define
-$$U_{it}=-\boldsymbol{\beta}^{\prime}_t \mathbf {x}_{it}+e_{it},$$
-where the random variables $\{e_{it}\}$ satisfy the following conditions:
+$$U^{O1}_{it}=-\boldsymbol{\beta}^{\prime}_t \mathbf {x}_{it}+e^{O1}_{it},$$
+where the random variables $\{e^{O1}_{it}\}$ satisfy the following conditions:
 \begin{enumerate}
-\item Marginally, $e_{it}$ follows the distribution specified by $F$ for all $i$ and $t$.
-\item Random variables associated with different subjects are independent, i.e., $e_{i_1t_1}$ and $e_{i_2t_2}$ are independent provided that $i_1 \neq i_2$.
-\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e_{it_1}$ and $e_{it_2}$ may be correlated provided that $t_1 \neq t_2$.
+\item Marginally, $e^{O1}_{it}$ follows the distribution specified by $F$ for all $i$ and $t$.
+\item Random variables associated with different subjects are independent, i.e., $e^{O1}_{i_1t_1}$ and $e^{O1}_{i_2t_2}$ are independent provided that $i_1 \neq i_2$.
+\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e^{O1}_{it_1}$ and $e^{O1}_{it_2}$ may be correlated provided that $t_1 \neq t_2$.
 \end{enumerate}
-It can be shown that using the threshold
-$$Y_{it}=j \Leftrightarrow \beta_{t(j-1)0} < U_{it} \leq \beta_{tj0}$$
+It can be shown (Touloumis, 2016) that using the threshold
+$$Y_{it}=j \Leftrightarrow \beta_{t(j-1)0} < U^{O1}_{it} \leq \beta_{tj0}$$
 correlated ordinal responses that satisfy the marginal cumulative link model (\ref{MCLM}) are generated.\\
 \indent For example, suppose that we want to simulate correlated ordinal responses from the marginal cumulative probit model
 \begin{equation*}
@@ -127,16 +128,16 @@ The function \texttt{rmult.crm()} simulates correlated ordinal responses under t
 \end{equation}
 where $\beta_{tj0}$ is the $j$-th category-specific intercept at the $t$-th measurement occasion, $\boldsymbol \beta_t$ is the regression parameter vector at the $t$-th measurement occasion and $F$ is a cdf.\\ 
 \indent Define 
-$$U_{itj}=-\boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it}+e_{itj},$$
-where the random variables $\{e_{itj}\}$ satisfy the following conditions:
+$$U^{O2}_{itj}=-\boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it}+e^{O2}_{itj},$$
+where the random variables $\{e^{O2}_{itj}\}$ satisfy the following conditions:
 \begin{enumerate}
-\item Marginally, $e_{itj}$ follows the distribution specified by $F$ for all $i$, $t$ and $j$.
-\item Random variables associated with different subjects are independent, i.e., $e_{i_1t_1j_1}$ and $e_{i_2t_2j_2}$ are independent provided that $i_1 \neq i_2$.
-\item Category-specific random variables for each subject at a given measurement occasion are independent, i.e., $e_{itj_1}$ and $e_{itj_2}$ are independent provided that $j_1\neq j_2$ (local independence assumption).
-\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e_{it_1j_1}$ and $e_{it_2j_2}$ may be correlated provided that $t_1\neq t_2$.
+\item Marginally, $e^{O2}_{itj}$ follows the distribution specified by $F$ for all $i$, $t$ and $j$.
+\item Random variables associated with different subjects are independent, i.e., $e^{O2}_{i_1t_1j_1}$ and $e^{O2}_{i_2t_2j_2}$ are independent provided that $i_1 \neq i_2$.
+\item Category-specific random variables for each subject at a given measurement occasion are independent, i.e., $e^{O2}_{itj_1}$ and $e^{O2}_{itj_2}$ are independent provided that $j_1\neq j_2$ (local independence assumption).
+\item Subject-specific random variables measured at different occasions may be correlated, i.e., $e^{O2}_{it_1j_1}$ and $e^{O2}_{it_2j_2}$ may be correlated provided that $t_1\neq t_2$.
 \end{enumerate}
-It can be shown that using the threshold
-$$Y_{it}=j, \text{ given } Y_{it} \geq j \Leftrightarrow U_{itj} \leq \beta_{tj0}$$
+It can be shown (Touloumis, 2016) that using the threshold
+$$Y_{it}=j, \text{ given } Y_{it} \geq j \Leftrightarrow U^{O2}_{itj} \leq \beta_{tj0}$$
 correlated ordinal responses that satisfy the marginal continuation-ratio model (\ref{MCRM}) are generated.\\
 \indent Suppose we want to simulate ordinal multinomial responses under the marginal continuation-ratio probit model
 \begin{equation*}
@@ -167,15 +168,15 @@ The function \texttt{rbin()} simulates correlated binary responses under the mar
 \end{equation}
 where $\beta_{t0}$ is the intercept at measurement occasion $t$, $\boldsymbol \beta_t$ is the parameter vector at measurement occasion $t$ and $F$ is a cdf.\\
 \indent Define 
-$$U_{it}=\boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it}+e_{it},$$
-where the random variables $\{e_{it}\}$ satisfy the following conditions:
+$$U^{B}_{it}=\boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it}+e^{B}_{it},$$
+where the random variables $\{e^{B}_{it}\}$ satisfy the following conditions:
 \begin{enumerate}
-\item Marginally, $e_{it}$ follows the distribution specified by $F$ for all $i$ and $t$.
-\item Random variables associated with different subjects are independent, i.e., $e_{i_1t_1}$ and $e_{i_2t_2}$ are independent provided that $i_1 \neq i_2$.
-\item Subject-specific random variables may be correlated, i.e., $e_{it_1}$ and $e_{it_2}$ may be correlated provided that $t_1\neq t_2$.
+\item Marginally, $e^{B}_{it}$ follows the distribution specified by $F$ for all $i$ and $t$.
+\item Random variables associated with different subjects are independent, i.e., $e^{B}_{i_1t_1}$ and $e^{B}_{i_2t_2}$ are independent provided that $i_1 \neq i_2$.
+\item Subject-specific random variables may be correlated, i.e., $e^{B}_{it_1}$ and $e^{B}_{it_2}$ may be correlated provided that $t_1\neq t_2$.
 \end{enumerate}
 It can be shown that using the threshold
-$$Y_{it}=1 \Leftrightarrow U_{it} \leq \beta_{t0} + 2 \boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it} $$
+$$Y_{it}=1 \Leftrightarrow U^{B}_{it} \leq \beta_{t0} + 2 \boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it} $$
 correlated binary responses that satisfy the marginal model (\ref{MB}) are generated.\\
 \indent Suppose that the goal is to simulate correlated binary responses from the marginal probit model 
 \begin{equation}
@@ -207,7 +208,7 @@ library(gee)
 binGEEmod <- gee(y ~ x, family = binomial("probit"), id = id, data = CorBinRes$simdata)
 summary(binGEEmod)
 @
-Now consider the same set-up as in marginal model~(\ref{MBex}) but with the cdf of the logistic function instead of $\Phi$. Here is one way to achieve simulation of correlated binary responses under this configuration without employing the NORTA method:
+Now consider the same set-up as in marginal model~(\ref{MBex}) but with a logistic cdf. Here is one way to achieve simulation of correlated binary responses under this configuration without employing the NORTA method:
 <<>>=
 set.seed(123)
 library(evd)
@@ -219,9 +220,14 @@ CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
 binGEEmod <- gee(y ~ x, family = binomial("logit"), id = id, data = CorBinRes$simdata)
 summary(binGEEmod)
 @
-\section{Citation Information}
+\section{How to Cite}
 <<>>=
 citation("SimCorMultRes")
 @
+
+  \begin{thebibliography}{1}
+\bibitem[Touloumis (2016)]{Touloumis2016} Touloumis, A. (2016). Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \textit{The R Journal} (forthcoming).
+  \end{thebibliography}
+
 \end{document}
 

@@ -23,10 +23,13 @@ rbin <- function(clsize = clsize, intercepts = intercepts, betas = betas, xformu
         betas <- c(t(betas))
     }
     lpformula <- as.formula(xformula)
-    lpformula <- update(lpformula, ~. - 1)
     if (length(paste0(attr(terms(lpformula), "variables"))) == 1) 
-        stop("No covariates were found in 'formula' ")
+      stop("No covariates were found in 'formula' ")
     Xmat <- model.matrix(lpformula, data = xdata)
+    if (attr(terms(lpformula), "intercept") == 0) {
+      lpformula <- update(lpformula,~.+1)
+    }
+    Xmat <- matrix(Xmat[,-1],ncol=ncol(Xmat)-1)
     if (length(betas) != (clsize) * ncol(Xmat)) 
         stop("The length of 'betas' does not match with the number of covariates")
     lin.pred <- matrix(betas, nrow = nrow(Xmat), ncol = ncol(Xmat), byrow = TRUE) * Xmat

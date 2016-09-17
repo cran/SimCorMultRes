@@ -22,6 +22,12 @@ rmult.bcl <- function(clsize = clsize, ncategories = ncategories, betas = betas,
     if (attr(terms(lpformula), "intercept") == 0) 
         stop("'formula' must have an intercept term")
     Xmat <- model.matrix(lpformula, data = xdata)
+#    att <- attr(Xmat, "assign")
+#    factor.columns <- unique(att[duplicated(att)])
+#    if (length(factor.columns) >= 1) {
+#      Xmat <- Xmat[, -match(factor.columns[1], att)]
+#      Xmat <- data.matrix(Xmat)
+#    }
     Xmat <- apply(Xmat, 2, function(x) rep(x, each = ncategories))
     if (length(betas) != (clsize * ncategories * ncol(Xmat))) 
         stop("The length of 'betas' does not match with the provided covariates")

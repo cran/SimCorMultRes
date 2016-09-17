@@ -40,7 +40,7 @@ The assumed marginal model is
 \deqn{Pr(Y_{it} = 1 |x_{it})=F(\beta_{t0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th binary response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{t0}} and \eqn{\beta_{t}} are the intercept and regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The binary response \eqn{Y_{it}} is obtained by extending the approach of \cite{Emrich and Piedmonte (1991)}. See vignette for more info.
+The binary response \eqn{Y_{it}} is obtained by extending the approach of \cite{Emrich and Piedmonte (1991)}. See \cite{Touloumis (2016)} for more info.
 
 When \eqn{\beta_{t0}=\beta_{0}} for all \eqn{t}, then \code{intercepts} should be provided as a single number. Otherwise, \code{intercepts} must be provided as a numeric vector such that the \eqn{t}-th element is the intercept at measurement occasion \eqn{t}.
 
@@ -50,13 +50,13 @@ The appropriate use of \code{xformula} is \code{xformula = ~ covariates}, where 
 
 The optional argument \code{xdata} should be provided in ``long'' format.
 
-The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e_{it}} in the threshold approach described in the vignette. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, element (\eqn{i,t}) of \code{rlatent} represents the realization of \eqn{e_{it}}.
+The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e^{B}_{it}} in \cite{Touloumis (2016)}. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, element (\eqn{i,t}) of \code{rlatent} represents the realization of \eqn{e^{B}_{it}}.
 }
 \value{
 Returns a list that has components:
 \item{Ysim}{the simulated binary responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
 \item{simdata}{a data frame that includes the simulated response variables (y), the covariates specified by \code{xformula}, subjects' identities (id) and the corresponding measurement occasions (time).}
-\item{rlatent}{the latent random variables denoted by \eqn{e_{it}} in the vignette.}
+\item{rlatent}{the latent random variables denoted by \eqn{e^{B}_{it}} in \cite{Touloumis (2016)}.}
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.
@@ -64,6 +64,8 @@ Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vect
 Emrich, L. J. and Piedmonte, M. R. (1991) A method for generating high-dimensional multivariate binary variates. \emph{The American Statistician} \bold{45}, 302--304.
 
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561. 
+
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
 }
 \author{
 Anestis Touloumis

@@ -40,7 +40,7 @@ The assumed marginal continuation-ratio model is
 \deqn{Pr(Y_{it}=j |Y_{it} \ge j,x_{it})=F(\beta_{tj0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th multinomial response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The ordinal response \eqn{Y_{it}} is determined by extending the latent variable threshold approach of \cite{Tutz (1991)}. See vignette for more info.
+The ordinal response \eqn{Y_{it}} is determined by extending the latent variable threshold approach of \cite{Tutz (1991)}. See \cite{Touloumis (2016)} for more info.
 
 When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that row \eqn{t} contains the category-specific intercepts at the \eqn{t}-th measurement occasion.
 
@@ -50,18 +50,20 @@ The appropriate use of \code{xformula} is \code{xformula = ~ covariates}, where 
 
 The optional argument \code{xdata} should be provided in ``long'' format.
 
-The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e_{itj}} in the threshold approach described in the vignette. In this case, the algorithm forces \code{cor.matrix} to respect the local independence assumption. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject \eqn{i} and columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the realization of \eqn{e_{it1},...,e_{itJ}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}.
+The NORTA method is the default option for simulating the latent random vectors denoted by \eqn{e^{O2}_{itj}} in \cite{Touloumis (2016)}. In this case, the algorithm forces \code{cor.matrix} to respect the local independence assumption. To import simulated values for the latent random vectors without utilizing the NORTA method, the user can employ the \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject \eqn{i} and columns \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the realization of \eqn{e^{O2}_{it1},...,e^{O2}_{itJ}}, respectively, for \eqn{t=1,\ldots,\code{clsize}}.
 }
 \value{
 Returns a list that has components:
 \item{Ysim}{the simulated ordinal responses. Element (\eqn{i},\eqn{t}) represents the realization of \eqn{Y_{it}}.}
 \item{simdata}{a data frame that includes the simulated response variables (y), the covariates specified by \code{xformula}, subjects' identities (id) and the corresponding measurement occasions (time).}
-\item{rlatent}{the latent random variables denoted by \eqn{e_{it}} in the vignette.}
+\item{rlatent}{the latent random variables denoted by \eqn{e^{O2}_{it}} in \cite{Touloumis (2016)}.}
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vectors with arbitrary marginal distributions and correlation matrix}. Technical Report, Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, Illinois.
 
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
+
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
 
 Tutz, G. (1991) Sequential models in categorical regression. \emph{Computational Statistics & Data Analysis} \bold{11}, 275--295.
 }
