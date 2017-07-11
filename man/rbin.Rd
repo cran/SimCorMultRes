@@ -17,7 +17,7 @@ integer indicating the common cluster size.
 numerical (or numeric vector of length \code{clsize}) containing the intercept(s) of the marginal model.
 }
   \item{betas}{
-numerical vector or matrix containing the value of the marginal regression parameter vector (excluding \code{intercepts}).
+numerical vector or matrix containing the value of the marginal regression parameter vector associated with the covariates (i.e., excluding \code{intercepts}).
 }
   \item{xformula}{
 formula expression as in other marginal regression models but without including a response variable.  
@@ -36,13 +36,15 @@ matrix with \code{clsize} columns containing realizations of the latent random v
 }
 }
 \details{
+The formulae are easier to read from either the Vignette or the Reference Manual (both available \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
+
 The assumed marginal model is  
 \deqn{Pr(Y_{it} = 1 |x_{it})=F(\beta_{t0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th binary response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{t0}} and \eqn{\beta_{t}} are the intercept and regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The binary response \eqn{Y_{it}} is obtained by extending the approach of \cite{Emrich and Piedmonte (1991)}. See \cite{Touloumis (2016)} for more info.
+The binary response \eqn{Y_{it}} is obtained by extending the approach of \cite{Emrich and Piedmonte (1991)} as suggested in \cite{Touloumis (2016)}.
 
-When \eqn{\beta_{t0}=\beta_{0}} for all \eqn{t}, then \code{intercepts} should be provided as a single number. Otherwise, \code{intercepts} must be provided as a numeric vector such that the \eqn{t}-th element is the intercept at measurement occasion \eqn{t}.
+When \eqn{\beta_{t0}=\beta_{0}} for all \eqn{t}, then \code{intercepts} should be provided as a single number. Otherwise, \code{intercepts} must be provided as a numeric vector such that the \eqn{t}-th element corresponds to the intercept at measurement occasion \eqn{t}.
 
 \code{betas} should be provided as a numeric vector only when \eqn{\beta_{t}=\beta} for all \eqn{t}. Otherwise, \code{betas} must be provided as a numeric matrix with \code{clsize} rows such that the \eqn{t}-th row contains the value of \eqn{\beta_{t}}. In either case, \code{betas} should reflect the order of the terms implied by \code{xformula}.
 
@@ -65,7 +67,7 @@ Emrich, L. J. and Piedmonte, M. R. (1991) A method for generating high-dimension
 
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561. 
 
-Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal} \bold{8}, 79--91.
 }
 \author{
 Anestis Touloumis
@@ -74,7 +76,7 @@ Anestis Touloumis
 \code{\link{rmult.bcl}} for simulating correlated nominal responses, \code{\link{rmult.clm}} and \code{\link{rmult.crm}} for simulating correlated ordinal responses.
 }
 \examples{
-## See vignette for the sampling scheme.
+## See Example 3.4 in the Vignette.
 set.seed(123)
 N <- 5000
 clsize <- 4
@@ -86,10 +88,10 @@ CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
     xformula = ~x, cor.matrix = cor.matrix, link = "probit")
 library(gee)
 binGEEmod <- gee(y ~ x, family = binomial("probit"), id = id, data = CorBinRes$simdata)
-summary(binGEEmod)
+summary(binGEEmod)$coefficients
 
-## Example where the NORTA method is not preferred (see vignette).
-set.seed(123)
+## See Example 3.5 in the Vignette.
+set.seed(8)
 library(evd)
 rlatent1 <- rmvevd(N, dep = sqrt(1 - 0.9), model = "log", d = clsize)
 rlatent2 <- rmvevd(N, dep = sqrt(1 - 0.9), model = "log", d = clsize)
@@ -97,5 +99,5 @@ rlatent <- rlatent1 - rlatent2
 CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas, 
     xformula = ~x, rlatent = rlatent)
 binGEEmod <- gee(y ~ x, family = binomial("logit"), id = id, data = CorBinRes$simdata)
-summary(binGEEmod)
+summary(binGEEmod)$coefficients
 }

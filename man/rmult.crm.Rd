@@ -17,7 +17,7 @@ integer indicating the common cluster size.
 numerical vector or matrix containing the intercepts of the marginal continuation-ratio model.
 }
   \item{betas}{
-numerical vector or matrix containing the value of the marginal regression parameter vector (excluding \code{intercepts}).
+numerical vector or matrix containing the value of the marginal regression parameter vector associated with the covariates (i.e., excluding \code{intercepts}).
 }
   \item{xformula}{
 formula expression as in other marginal regression models but without including a response variable.  
@@ -36,11 +36,13 @@ matrix with \code{clsize} rows and \code{ncategories} columns containing realiza
 }
 }
 \details{
+The formulae are easier to read from either the Vignette or the Reference Manual (both available \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
+
 The assumed marginal continuation-ratio model is  
 \deqn{Pr(Y_{it}=j |Y_{it} \ge j,x_{it})=F(\beta_{tj0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th multinomial response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The ordinal response \eqn{Y_{it}} is determined by extending the latent variable threshold approach of \cite{Tutz (1991)}. See \cite{Touloumis (2016)} for more info.
+The ordinal response \eqn{Y_{it}} is determined by extending the latent variable threshold approach of \cite{Tutz (1991)} as suggested in \cite{Touloumis (2016)}.
 
 When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that row \eqn{t} contains the category-specific intercepts at the \eqn{t}-th measurement occasion.
 
@@ -74,14 +76,18 @@ Anestis Touloumis
 \code{\link{rmult.bcl}} for simulating correlated nominal responses, \code{\link{rmult.clm}} for simulating correlated ordinal responses and \code{\link{rbin}} for simulating correlated binary responses. 
 }
 \examples{
-## See vignette for more details about the sampling scheme.
+## See Example 3.3 in the Vignette.
 set.seed(1)
 N <- 500
 clsize <- 4
 intercepts <- c(-1.5, -0.5, 0.5, 1.5)
-cor.matrix <- diag(1, 16)
+betas <- 1
 x <- rnorm(N * clsize)
-CorOrdRes <- rmult.crm(clsize = clsize, intercepts = intercepts, betas = 1, 
+ncategories <- 5
+cor.matrix <- diag(1, (ncategories - 1) * clsize) + kronecker(toeplitz(c(0, 
+    rep(0.24, ncategories - 2))), matrix(1, clsize, clsize))
+CorOrdRes <- rmult.crm(clsize = clsize, intercepts = intercepts, betas = betas, 
     xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+head(CorOrdRes$Ysim)
     }
 

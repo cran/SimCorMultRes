@@ -1,7 +1,7 @@
 \name{rnorta}
 \alias{rnorta}
 \title{
-Simulating  Random Vectors using the NORTA Method  
+Simulating Random Vectors using the NORTA Method  
 }
 \description{
 Utility function to simulate random vectors with predefined marginal distributions via the NORTA method.  
@@ -43,7 +43,7 @@ Cario, M. C. and Nelson, B. L. (1997)  \emph{Modeling and generating random vect
 
 Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with specified univariate distributions and correlation coefficients. \emph{IEEE Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
 
-Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal} \bold{8}, 79--91.
 }
 
 \examples{

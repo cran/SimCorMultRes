@@ -6,7 +6,7 @@
 Simulating Correlated Multinomial Responses
 }
 \description{
-Functions to simulate correlated multinomial responses (three or more nominal or ordinal response categories) and correlated binary responses subject to  a marginal model specification.
+Functions to simulate correlated multinomial responses (three or more nominal or ordinal response categories) and correlated binary responses subject to a marginal model specification.
 }
 \details{
 The simulated correlated binary or multinomial responses are drawn as realizations of a latent regression model for continuous random vectors with the correlation structure expressed in terms of the latent correlation.
@@ -17,7 +17,9 @@ For a nominal response scale, the multinomial responses are simulated conditiona
 
 Correlated binary responses are simulated using the function \code{\link{rbin}}. 
 
-The threshold approaches that give rise to the implemented marginal models are described in the vignette and in \cite{Touloumis (2016)}.
+The threshold approaches that give rise to the implemented marginal models are fully described in \cite{Touloumis (2016)}.
+
+The formulae are easier to read from either the Vignette or the Reference Manual (both available \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
 }
 \author{
 Anestis Touloumis  
@@ -35,7 +37,7 @@ McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Ro
 
 McFadden, D. (1974) \emph{Conditional logit analysis of qualitative choice behavior}. New York: Academic Press, 105--142.
 
-Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal} \bold{8}, 79--91.
 
 Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics} \bold{69}, 633--640.
 

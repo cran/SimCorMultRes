@@ -17,7 +17,7 @@ integer indicating the common cluster size.
 numerical vector or matrix containing the intercepts of the marginal cumulative link model.
 }
   \item{betas}{
-numerical vector or matrix containing the value of the marginal regression parameter vector (excluding \code{intercepts}).
+numerical vector or matrix containing the value of the marginal regression parameter vector associated with the covariates (i.e., excluding \code{intercepts}).
 }
   \item{xformula}{
 formula expression as in other marginal regression models but without including a response variable.  
@@ -36,11 +36,13 @@ matrix with \code{clsize} columns containing realizations of the latent random v
 }
 }
 \details{
+The formulae are easier to read from either the Vignette or the Reference Manual (both available \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
+
 The assumed marginal cumulative link model is  
 \deqn{Pr(Y_{it}\le j |x_{it})=F(\beta_{tj0} +\beta^{'}_{t} x_{it})}
 where \eqn{F} is the cumulative distribution function determined by \code{link}. For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th ordinal response and \eqn{x_{it}} is the associated covariates vector. Finally, \eqn{\beta_{tj0}} is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression parameter vector at the \eqn{t}-th measurement occasion.
 
-The ordinal response \eqn{Y_{it}} is obtained by extending the approach of \cite{McCullagh (1980)}. See \cite{Touloumis (2016)} for more info.
+The ordinal response \eqn{Y_{it}} is obtained by extending the approach of \cite{McCullagh (1980)} as suggested in \cite{Touloumis (2016)}.
 
 When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts} should be provided as a numerical vector. Otherwise, \code{intercepts} must be a numerical matrix such that row \eqn{t} contains the category-specific intercepts at the \eqn{t}-th measurement occasion.
 
@@ -66,7 +68,7 @@ Li, S. T. and Hammond, J. L. (1975)  Generation of pseudorandom numbers with spe
 
 McCullagh, P. (1980) Regression models for ordinal data. \emph{Journal of the Royal Statistical Society B} \bold{42}, 109--142.
 
-Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal (forthcoming)}.
+Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package. \emph{The R Journal} \bold{8}, 79--91.
 
 Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial responses using a local odds ratios parameterization. \emph{Biometrics} \bold{69}, 633--640.
 }
@@ -77,7 +79,7 @@ Anestis Touloumis
 \code{\link{rmult.bcl}} for simulating correlated nominal responses, \code{\link{rmult.crm}} for simulating correlated ordinal responses and \code{\link{rbin}} for simulating correlated binary responses.
 }
 \examples{
-## See vignette for the sampling scheme.
+## See Example 3.2 in the Vignette.
 set.seed(12345)
 N <- 500
 clsize <- 4
@@ -87,6 +89,7 @@ x <- rep(rnorm(N), each = clsize)
 cor.matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
 CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas, 
     xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+head(CorOrdRes$simdata, n = 8)
 
 ## Same sampling scheme except that the parameter vector is now
 ## time-stationary.
@@ -94,7 +97,6 @@ set.seed(12345)
 x <- rep(rnorm(N), each = clsize)
 CorOrdRes <- rmult.clm(clsize = clsize, betas = 1, xformula = ~x, cor.matrix = toeplitz(c(1, 
     0.85, 0.5, 0.15)), intercepts = c(-1.5, -0.5, 0.5, 1.5), link = "probit")
-
 ## Fit a GEE model (Touloumis et al., 2013) to estimate the regression
 ## coefficients.
 library(multgee)
