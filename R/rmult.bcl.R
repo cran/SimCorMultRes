@@ -1,82 +1,132 @@
-rmult.bcl <- function(clsize = clsize, ncategories = ncategories, 
-                      betas = betas, xformula = formula(xdata), 
-                      xdata = parent.frame(), cor.matrix = cor.matrix, 
-                      rlatent = NULL) {
-    if (all.equal(clsize, as.integer(clsize)) != TRUE | clsize < 2) 
-        stop("'clsize' must be a positive integer greater than or equal to two")
-    if (!is.numeric(ncategories) | ncategories < 3) 
-        stop("'ncategories' must be greater than or equal to three")
-    ncategories <- as.integer(ncategories)
-    if (all.equal(ncategories, as.integer(ncategories)) != TRUE | ncategories < 
-        3) 
-        stop("'ncategories' must be a positive integer greater than or equal to three")
-    if (!(is.vector(betas) & !is.list(betas)) & !is.matrix(betas)) 
-        stop("'betas' must be a vector or a matrix")
-    if (!is.numeric(betas)) 
-        stop("'betas' must be numeric")
-    if (is.vector(betas) & !is.list(betas)) {
-        betas <- rep(betas, clsize)
-    } else {
-        if (nrow(betas) != clsize) 
-            stop("The number of rows in 'betas' should be equal to 'clsize'")
-        betas <- c(t(betas))
-    }
-    lpformula <- as.formula(xformula)
-    if (attr(terms(lpformula), "intercept") == 0) 
-        stop("'formula' must have an intercept term")
-    Xmat <- model.matrix(lpformula, data = xdata)
-    Xmat <- apply(Xmat, 2, function(x) rep(x, each = ncategories))
-    if (length(betas) != (clsize * ncategories * ncol(Xmat))) 
-        stop("The length of 'betas' does not match with the provided covariates")
-    lin.pred <- matrix(betas, nrow = nrow(Xmat), ncol = ncol(Xmat),
-                       byrow = TRUE) * Xmat
-    lin.pred <- matrix(rowSums(lin.pred), ncol = ncategories * clsize, 
-        byrow = TRUE)
-    ncol.lp <- clsize * ncategories
-    R <- nrow(lin.pred)
-    if (is.null(rlatent)) {
-        if (!is.matrix(cor.matrix)) 
-            stop("'cor.matrix' must be a matrix")
-        if (!is.numeric(cor.matrix)) 
-            stop("'cor.matrix' must be numeric")
-        if (ncol(cor.matrix) != ncol.lp | nrow(cor.matrix) != ncol.lp) 
-            stop("'cor.matrix' must be a ", ncol.lp, "x", ncol.lp, " matrix")
-        if (!isSymmetric(cor.matrix)) 
-            stop("'cor.matrix' must be a symmetric matrix")
-        for (i in 1:clsize) {
-            diag.index <- 1:ncategories + (i - 1) * ncategories
-            cor.matrix[diag.index, diag.index] <- diag(1, ncategories)
-        }
-        if (any(cor.matrix > 1) | any(cor.matrix < -1)) 
-            stop("all the elements of 'cor.matrix' must be on [-1,1]")
-        if (any(
-          eigen(cor.matrix, symmetric = TRUE, only.values = TRUE)$values <= 0)) 
-            stop("'cor.matrix' must respect the local independence of the alternatives and must be positive definite")
-        err <- rnorta(R, cor.matrix, rep("qgumbel", ncol.lp))
-    } else {
-        if (!is.matrix(rlatent)) 
-            stop("'rlatent' must be a matrix")
-        if (!is.numeric(rlatent)) 
-            stop("'rlatent' must be numeric")
-        if (ncol(rlatent) != ncol.lp | nrow(rlatent) != R) 
-            stop("'rlatent' must be a ", R, "x", ncol.lp, " matrix")
-        cor.matrix <- NULL
-        err <- rlatent
-    }
-    U <- lin.pred + err
-    U <- matrix(as.vector(t(U)), nrow = clsize * R, ncol = ncategories, 
-        TRUE)
-    Ysim <- apply(U, 1, which.max)
-    Ysim <- matrix(Ysim, ncol = clsize, byrow = TRUE)
-    id <- rep(1:R, each = clsize)
-    time <- rep(1:clsize, R)
-    y <- c(t(Ysim))
-    lpformula <- update(lpformula, ~. - 1)
-    rownames(Ysim) <- rownames(err) <- paste("i", 1:R, sep = "=")
-    colnames(Ysim) <- paste("t", 1:clsize, sep = "=")
-    colnames(err) <- paste("t=", rep(1:clsize, each = ncategories), " & j=", 
-        rep(1:ncategories, clsize), sep = "")
-    simdata <- data.frame(y, model.frame(formula = lpformula, data = xdata), 
-        id, time)
-    list(Ysim = Ysim, simdata = simdata, rlatent = err)
+#' Simulating Correlated Nominal Responses Conditional on a Marginal
+#' Baseline-Category Logit Model Specification
+#'
+#' Simulates correlated nominal responses assuming a baseline-category logit
+#' model for the marginal probabilities.
+#'
+#' The formulae are easier to read from either the Vignette or the Reference
+#' Manual (both available
+#' \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
+#'
+#' The assumed marginal baseline category logit model is \deqn{log
+#' \frac{Pr(Y_{it}=j |x_{it})}{Pr(Y_{it}=J |x_{it})}=(\beta_{tj0}-\beta_{tJ0})
+#' + (\beta^{'}_{tj}-\beta^{'}_{tJ}) x_{it}=\beta^{*}_{tj0}+ \beta^{*'}_{tj}
+#' x_{it}} For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th nominal response
+#' and \eqn{x_{it}} is the associated covariates vector. Also \eqn{\beta_{tj0}}
+#' is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement
+#' occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression
+#' parameter vector at the \eqn{t}-th measurement occasion.
+#'
+#' The nominal response \eqn{Y_{it}} is obtained by extending the principle of
+#' maximum random utility (\cite{McFadden, 1974}) as suggested in
+#' \cite{Touloumis (2016)}.
+#'
+#' \code{betas} should be provided as a numeric vector only when
+#' \eqn{\beta_{tj0}=\beta_{j0}} and \eqn{\beta_{tj}=\beta_j} for all \eqn{t}.
+#' Otherwise, \code{betas} must be provided as a numeric matrix with
+#' \code{clsize} rows such that the \eqn{t}-th row contains the value of
+#' (\eqn{\beta_{t10},\beta_{t1},\beta_{t20},\beta_{t2},...,\beta_{tJ0},
+#' \beta_{tJ}}). In either case, \code{betas} should reflect the order of the
+#' terms implied by \code{xformula}.
+#'
+#' The appropriate use of \code{xformula} is \code{xformula = ~ covariates},
+#' where \code{covariates} indicate the linear predictor as in other marginal
+#' regression models.
+#'
+#' The optional argument \code{xdata} should be provided in ``long'' format.
+#'
+#' The NORTA method is the default option for simulating the latent random
+#' vectors denoted by \eqn{e^{NO}_{itj}} in \cite{Touloumis (2016)}. In this
+#' case, the algorithm forces \code{cor.matrix} to respect the assumption of
+#' choice independence. To import simulated values for the latent random
+#' vectors without utilizing the NORTA method, the user can employ the
+#' \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject
+#' \eqn{i} and columns
+#' \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the
+#' realization of \eqn{e^{NO}_{it1},...,e^{NO}_{itJ}}, respectively, for
+#' \eqn{t=1,\ldots,\code{clsize}}.
+#'
+#' @param clsize integer indicating the common cluster size.
+#' @param ncategories integer indicating the number of nominal response
+#' categories.
+#' @param betas numerical vector or matrix containing the value of the marginal
+#' regression parameter vector.
+#' @param xformula formula expression as in other marginal regression models
+#' but without including a response variable.
+#' @param xdata optional data frame containing the variables provided in
+#' \code{xformula}.
+#' @param cor.matrix matrix indicating the correlation matrix of the
+#' multivariate normal distribution when the NORTA method is employed
+#' (\code{rlatent = NULL}).
+#' @param rlatent matrix with \code{(clsize * ncategories)} columns containing
+#' realizations of the latent random vectors when the NORTA method is not
+#' preferred. See details for more info.
+#' @return Returns a list that has components: \item{Ysim}{the simulated
+#' nominal responses. Element (\eqn{i},\eqn{t}) represents the realization of
+#' \eqn{Y_{it}}.} \item{simdata}{a data frame that includes the simulated
+#' response variables (y), the covariates specified by \code{xformula},
+#' subjects' identities (id) and the corresponding measurement occasions
+#' (time).} \item{rlatent}{the latent random variables denoted by
+#' \eqn{e^{NO}_{it}} in \cite{Touloumis (2016)}.}
+#' @author Anestis Touloumis
+#' @seealso \code{\link{rbin}} for simulating correlated binary responses,
+#' \code{\link{rmult.clm}} and \code{\link{rmult.crm}} for simulating
+#' correlated ordinal responses.
+#' @references Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
+#' generating random vectors with arbitrary marginal distributions and
+#' correlation matrix}. Technical Report, Department of Industrial Engineering
+#' and Management Sciences, Northwestern University, Evanston, Illinois.
+#'
+#' Li, S. T. and Hammond, J. L. (1975) Generation of pseudorandom numbers with
+#' specified univariate distributions and correlation coefficients. \emph{IEEE
+#' Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
+#'
+#' McFadden, D. (1974) \emph{Conditional logit analysis of qualitative choice
+#' behavior}. New York: Academic Press, 105--142.
+#'
+#' Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses
+#' under Marginal Model Specification: The SimCorMultRes Package. \emph{The R
+#' Journal} \bold{8}, 79--91.
+#'
+#' Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial
+#' responses using a local odds ratios parameterization. \emph{Biometrics}
+#' \bold{69}, 633--640.
+#' @examples
+#' ## See Example 3.1 in the Vignette.
+#' betas <- c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
+#' N <- 500
+#' ncategories <- 4
+#' clsize <- 3
+#' set.seed(1)
+#' x1 <- rep(rnorm(N), each = clsize)
+#' x2 <- rnorm(N * clsize)
+#' xdata <- data.frame(x1, x2)
+#' cor.matrix <- kronecker(toeplitz(c(1, rep(0.95, clsize - 1))), diag(ncategories))
+#' CorNorRes <- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas,
+#'     xformula = ~x1 + x2, xdata = xdata, cor.matrix = cor.matrix)
+#' suppressPackageStartupMessages(library('multgee'))
+#' fit <- nomLORgee(y ~ x1 + x2, data = CorNorRes$simdata, id = id, repeated = time,
+#'     LORstr = 'time.exch')
+#' round(coef(fit), 2)
+#'
+#' @export
+rmult.bcl <- function(clsize = clsize, ncategories = ncategories, betas = betas,
+    xformula = formula(xdata), xdata = parent.frame(), cor.matrix = cor.matrix,
+    rlatent = NULL) {
+  check_cluster_size(clsize)
+  ncategories <- check_ncategories(ncategories)
+  betas <- check_betas(betas, clsize)
+  lpformula <- check_xformula(xformula)
+  if (!is.environment(xdata))
+    xdata <- data.frame(na.omit(xdata))
+  lin_pred <- create_linear_predictor(betas, clsize, lpformula, xdata,
+                                      "rmult.bcl", ncategories = ncategories)
+  R <- nrow(lin_pred)
+  rlatent <- create_rlatent(rlatent, R, "cloglog", clsize, cor.matrix,
+                            "rmult.bcl", ncategories = ncategories)
+  Ysim <- apply_threshold(lin_pred, rlatent, clsize, "rmult.bcl",
+                          ncategories = ncategories)
+  lpformula <- update(lpformula, ~. - 1)
+  create_output(Ysim, R, clsize, rlatent, lpformula, xdata, "rmult.bcl",
+                ncategories = ncategories)
 }

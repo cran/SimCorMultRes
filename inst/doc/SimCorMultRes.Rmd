@@ -1,8 +1,10 @@
 ---
-title: "Simulating Correlated Binary and Multinomial Responses with __SimCorMultRes__"
+title: "Simulating Correlated Binary and Multinomial Responses with SimCorMultRes"
 author: "Anestis Touloumis"
-date: "`r Sys.Date()`"
-output: bookdown::pdf_document2
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  bookdown::html_document2:
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{Simulating Correlated Binary and Multinomial Responses}
   %\VignetteKeywords{correlated binary responses, correlated multinomial responses, correlated ordinal responses, correlated nominal responses, GEE}
@@ -22,12 +24,12 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction 
-The __R__ package __SimCorMultRes__ is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. This vignette briefly describes the simulation methods proposed by @Touloumis2016 and illustrates the use of the core functions of __SimCorMultRes__. A more detailed description of __SimCorMultRes__ can be found in @Touloumis2016. 
+The R package `SimCorMultRes` is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. This vignette briefly describes the simulation methods proposed by @Touloumis2016 and illustrates the use of the core functions of `SimCorMultRes`. A more detailed description of `SimCorMultRes` can be found in @Touloumis2016. 
 
 # Areas of Applications
 This package was created to facilitate the task of carrying out simulation studies and evaluating the performance of statistical method(s) for estimating the regression parameters in a marginal model with clustered binary and multinomial responses. Examples of such statistical methods include maximum likelihood methods, copula approaches, quasi-least squares approaches, generalized quasi-likelihood methods and generalized estimating equations (GEE) approaches among others [see references in @Touloumis2016]. 
 
-In addition, __SimCorMultRes__ can be used to generate correlated binary and multinomial random variables conditional on a desired dependence structure and known marginal probabilities even if these are not determined by a regression model [see third example in @Touloumis2016] or to explore approximations of association measures for discrete variables that arise as realizations of an underlying continuum [see second example in @Touloumis2016].
+In addition, `SimCorMultRes` can be used to generate correlated binary and multinomial random variables conditional on a desired dependence structure and known marginal probabilities even if these are not determined by a regression model [see third example in @Touloumis2016] or to explore approximations of association measures for discrete variables that arise as realizations of an underlying continuum [see second example in @Touloumis2016].
 
 # Simulation Methods
 Let $Y_{it}$ be the binary or multinomial response for subject $i$ ($i=1,\ldots,N$) at measurement occasion $t$ ($t=1,\ldots,T$), and let $\mathbf {x}_{it}$ be the associated covariates vector. We assume that $Y_{it} \in \{0,1\}$ for binary responses and $Y_{it} \in \{1,2,\ldots,J\geq 3\}$ for multinomial responses. 
@@ -63,7 +65,7 @@ where $N=500$, $T=3$, $(\beta_{10},\beta_{11},\beta_{12},\beta_{20},\beta_{21},\
 0 & \text{otherwise }\\
 \end{cases}
 \]
-for all $i=1,\ldots,N$.
+for all $i=1,\ldots,500$.
 ```
 
 ```{r, tidy=TRUE}
