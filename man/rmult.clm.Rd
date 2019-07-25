@@ -95,27 +95,28 @@ element (\eqn{i,t}) of \code{rlatent} represents the realization of
 \examples{
 ## See Example 3.2 in the Vignette.
 set.seed(12345)
-N <- 500
-clsize <- 4
-intercepts <- c(-1.5, -0.5, 0.5, 1.5)
-betas <- matrix(c(1, 2, 3, 4), 4, 1)
-x <- rep(rnorm(N), each = clsize)
-cor.matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
-CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas,
-    xformula = ~x, cor.matrix = cor.matrix, link = 'probit')
-head(CorOrdRes$simdata, n = 8)
+sample_size <- 500
+cluster_size <- 4
+beta_intercepts <- c(-1.5, -0.5, 0.5, 1.5)
+beta_coefficients <- matrix(c(1, 2, 3, 4), 4, 1)
+x <- rep(rnorm(sample_size), each = cluster_size)
+latent_correlation_matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
+simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size,
+  intercepts = beta_intercepts, betas = beta_coefficients, xformula = ~x,
+  cor.matrix = latent_correlation_matrix, link = "probit")
+head(simulated_ordinal_dataset$simdata, n = 8)
 
-## Same sampling scheme except that the parameter vector is now time-stationary.
+## Same sampling scheme except that the parameter vector is time-stationary.
 set.seed(12345)
-x <- rep(rnorm(N), each = clsize)
-CorOrdRes <- rmult.clm(clsize = clsize, betas = 1, xformula = ~x, cor.matrix = toeplitz(c(1,
-    0.85, 0.5, 0.15)), intercepts = c(-1.5, -0.5, 0.5, 1.5), link = 'probit')
+simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size, betas = 1,
+  xformula = ~x, cor.matrix = latent_correlation_matrix,
+  intercepts = beta_intercepts, link = "probit")
 ## Fit a GEE model (Touloumis et al., 2013) to estimate the regression
 ## coefficients.
 library(multgee)
-fitmod <- ordLORgee(y ~ x, id = id, repeated = time, link = 'probit', data = CorOrdRes$simdata)
-coef(fitmod)
-
+ordinal_gee_model <- ordLORgee(y ~ x, id = id, repeated = time,
+  link = "probit", data = simulated_ordinal_dataset$simdata)
+coef(ordinal_gee_model)
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
@@ -140,8 +141,9 @@ responses using a local odds ratios parameterization. \emph{Biometrics}
 }
 \seealso{
 \code{\link{rmult.bcl}} for simulating correlated nominal
-responses, \code{\link{rmult.crm}} for simulating correlated ordinal
-responses and \code{\link{rbin}} for simulating correlated binary responses.
+responses, \code{\link{rmult.crm}} and \code{\link{rmult.acl}} for
+simulating correlated ordinal responses and \code{\link{rbin}} for
+simulating correlated binary responses.
 }
 \author{
 Anestis Touloumis

@@ -73,8 +73,9 @@
 #' \eqn{e^{O1}_{it}} in \cite{Touloumis (2016)}.}
 #' @author Anestis Touloumis
 #' @seealso \code{\link{rmult.bcl}} for simulating correlated nominal
-#' responses, \code{\link{rmult.crm}} for simulating correlated ordinal
-#' responses and \code{\link{rbin}} for simulating correlated binary responses.
+#' responses, \code{\link{rmult.crm}} and \code{\link{rmult.acl}} for
+#' simulating correlated ordinal responses and \code{\link{rbin}} for
+#' simulating correlated binary responses.
 #' @references Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
 #' generating random vectors with arbitrary marginal distributions and
 #' correlation matrix}. Technical Report, Department of Industrial Engineering
@@ -97,41 +98,56 @@
 #' @examples
 #' ## See Example 3.2 in the Vignette.
 #' set.seed(12345)
-#' N <- 500
-#' clsize <- 4
-#' intercepts <- c(-1.5, -0.5, 0.5, 1.5)
-#' betas <- matrix(c(1, 2, 3, 4), 4, 1)
-#' x <- rep(rnorm(N), each = clsize)
-#' cor.matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
-#' CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas,
-#'     xformula = ~x, cor.matrix = cor.matrix, link = 'probit')
-#' head(CorOrdRes$simdata, n = 8)
+#' sample_size <- 500
+#' cluster_size <- 4
+#' beta_intercepts <- c(-1.5, -0.5, 0.5, 1.5)
+#' beta_coefficients <- matrix(c(1, 2, 3, 4), 4, 1)
+#' x <- rep(rnorm(sample_size), each = cluster_size)
+#' latent_correlation_matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
+#' simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size,
+#'   intercepts = beta_intercepts, betas = beta_coefficients, xformula = ~x,
+#'   cor.matrix = latent_correlation_matrix, link = "probit")
+#' head(simulated_ordinal_dataset$simdata, n = 8)
 #'
-#' ## Same sampling scheme except that the parameter vector is now time-stationary.
+#' ## Same sampling scheme except that the parameter vector is time-stationary.
 #' set.seed(12345)
-#' x <- rep(rnorm(N), each = clsize)
-#' CorOrdRes <- rmult.clm(clsize = clsize, betas = 1, xformula = ~x, cor.matrix = toeplitz(c(1,
-#'     0.85, 0.5, 0.15)), intercepts = c(-1.5, -0.5, 0.5, 1.5), link = 'probit')
+#' simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size, betas = 1,
+#'   xformula = ~x, cor.matrix = latent_correlation_matrix,
+#'   intercepts = beta_intercepts, link = "probit")
 #' ## Fit a GEE model (Touloumis et al., 2013) to estimate the regression
 #' ## coefficients.
 #' library(multgee)
-#' fitmod <- ordLORgee(y ~ x, id = id, repeated = time, link = 'probit', data = CorOrdRes$simdata)
-#' coef(fitmod)
-#'
+#' ordinal_gee_model <- ordLORgee(y ~ x, id = id, repeated = time,
+#'   link = "probit", data = simulated_ordinal_dataset$simdata)
+#' coef(ordinal_gee_model)
 #' @export
-rmult.clm <- function(clsize = clsize, intercepts = intercepts, betas = betas,
-    xformula = formula(xdata), xdata = parent.frame(), link = "logit",
-    cor.matrix = cor.matrix, rlatent = NULL) {
+rmult.clm <- function(clsize = clsize, intercepts = intercepts, betas = betas, # nolint
+                      xformula = formula(xdata), xdata = parent.frame(), link = "logit", # nolintr
+                      cor.matrix = cor.matrix, rlatent = NULL) { # nolint
   check_cluster_size(clsize)
-  intercepts <- check_intercepts(intercepts, clsize, "rmult.clm")
-  betas <- check_betas(betas, clsize)
-  lpformula <- check_xformula(xformula)
-  if (!is.environment(xdata))
-    xdata <- data.frame(na.omit(xdata))
-  lin_pred <- create_linear_predictor(betas, clsize, lpformula, xdata,
-                                      "rmult.clm")
-  R <- nrow(lin_pred)
-  rlatent <- create_rlatent(rlatent, R, link, clsize, cor.matrix, "rmult.clm")
-  Ysim <- apply_threshold(lin_pred, rlatent, clsize, "rmult.clm", intercepts)
-  create_output(Ysim, R, clsize, rlatent, lpformula, xdata, "rmult.clm")
+  beta_intercepts <- check_intercepts(intercepts, clsize, "rmult.clm")
+  beta_coefficients <- check_betas(betas, clsize)
+  linear_predictor_formula <- check_xformula(xformula)
+  if (!is.environment(xdata)) xdata <- data.frame(na.omit(xdata))
+  linear_predictor <- create_linear_predictor(
+    beta_coefficients, clsize,
+    linear_predictor_formula, xdata,
+    "rmult.clm"
+  )
+  sample_size <- nrow(linear_predictor)
+  simulated_latent_responses <- create_rlatent(
+    rlatent, sample_size, link,
+    clsize, cor.matrix,
+    "rmult.clm"
+  )
+  simulated_ordinal_responses <-
+    apply_threshold(
+      linear_predictor, simulated_latent_responses, clsize,
+      "rmult.clm", beta_intercepts
+    )
+  create_output(
+    simulated_ordinal_responses, sample_size, clsize,
+    simulated_latent_responses, linear_predictor_formula, xdata,
+    "rmult.clm"
+  )
 }

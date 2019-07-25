@@ -1,33 +1,37 @@
-#' Simulating Correlated Nominal Responses Conditional on a Marginal
-#' Baseline-Category Logit Model Specification
+#' Simulating Correlated Ordinal Responses Conditional on a Marginal
+#' Adjacent-Category Logit Model Specification
 #'
-#' Simulates correlated nominal responses assuming a baseline-category logit
+#' Simulates correlated ordinal responses assuming an adjacent-category logit
 #' model for the marginal probabilities.
 #'
 #' The formulae are easier to read from either the Vignette or the Reference
 #' Manual (both available
 #' \href{https://CRAN.R-project.org/package=SimCorMultRes}{here}).
 #'
-#' The assumed marginal baseline category logit model is \deqn{log
-#' \frac{Pr(Y_{it}=j |x_{it})}{Pr(Y_{it}=J |x_{it})}=(\beta_{tj0}-\beta_{tJ0})
-#' + (\beta^{'}_{tj}-\beta^{'}_{tJ}) x_{it}=\beta^{*}_{tj0}+ \beta^{*'}_{tj}
-#' x_{it}} For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th nominal response
+#' The assumed marginal adjacent-category logit model is \deqn{log
+#' \frac{Pr(Y_{it}=j |x_{it})}{Pr(Y_{it}=j+1 |x_{it})}=\beta_{tj0}
+#' + \beta^{'}_{t} x_{it}}
+#' For subject \eqn{i}, \eqn{Y_{it}} is the \eqn{t}-th ordinal response
 #' and \eqn{x_{it}} is the associated covariates vector. Also \eqn{\beta_{tj0}}
 #' is the \eqn{j}-th category-specific intercept at the \eqn{t}-th measurement
-#' occasion and \eqn{\beta_{tj}} is the \eqn{j}-th category-specific regression
+#' occasion and \eqn{\beta_{t}} is the regression
 #' parameter vector at the \eqn{t}-th measurement occasion.
 #'
-#' The nominal response \eqn{Y_{it}} is obtained by extending the principle of
-#' maximum random utility (\cite{McFadden, 1974}) as suggested in
-#' \cite{Touloumis (2016)}.
+#' The ordinal response \eqn{Y_{it}} is obtained by utilizing the threshold
+#' approach described in the Vignette. This approach is based on the connection
+#' between baseline-category and adjacent-category logit models.
+#'
+#' When \eqn{\beta_{tj0}=\beta_{j0}} for all \eqn{t}, then \code{intercepts}
+#' should be provided as a numerical vector. Otherwise, \code{intercepts} must
+#' be a numerical matrix such that row \eqn{t} contains the category-specific
+#' intercepts at the \eqn{t}-th measurement occasion.
 #'
 #' \code{betas} should be provided as a numeric vector only when
-#' \eqn{\beta_{tj0}=\beta_{j0}} and \eqn{\beta_{tj}=\beta_j} for all \eqn{t}.
-#' Otherwise, \code{betas} must be provided as a numeric matrix with
-#' \code{clsize} rows such that the \eqn{t}-th row contains the value of
-#' (\eqn{\beta_{t10},\beta_{t1},\beta_{t20},\beta_{t2},...,\beta_{tJ0},
-#' \beta_{tJ}}). In either case, \code{betas} should reflect the order of the
-#' terms implied by \code{xformula}.
+#' \eqn{\beta_{t}=\beta} for all \eqn{t}. Otherwise, \code{betas} must be
+#' provided as a numeric matrix with \code{clsize} rows such that the
+#' \eqn{t}-th row contains the value of \eqn{\beta_{t}}. In either case,
+#' \code{betas} should reflect the order of the terms implied by
+#' \code{xformula}.
 #'
 #' The appropriate use of \code{xformula} is \code{xformula = ~ covariates},
 #' where \code{covariates} indicate the linear predictor as in other marginal
@@ -36,19 +40,18 @@
 #' The optional argument \code{xdata} should be provided in ``long'' format.
 #'
 #' The NORTA method is the default option for simulating the latent random
-#' vectors denoted by \eqn{e^{NO}_{itj}} in \cite{Touloumis (2016)}. In this
-#' case, the algorithm forces \code{cor.matrix} to respect the assumption of
-#' choice independence. To import simulated values for the latent random
-#' vectors without utilizing the NORTA method, the user can employ the
-#' \code{rlatent} argument. In this case, row \eqn{i} corresponds to subject
-#' \eqn{i} and columns
+#' vectors denoted by \eqn{e^{O3}_{itj}} in the Vignette. To import
+#' simulated values for the latent random vectors without utilizing the NORTA
+#' method, the user can employ the \code{rlatent} argument. In this case,
+#' row \eqn{i} corresponds to subject \eqn{i} and columns
 #' \eqn{(t-1)*\code{ncategories}+1,...,t*\code{ncategories}} should contain the
-#' realization of \eqn{e^{NO}_{it1},...,e^{NO}_{itJ}}, respectively, for
+#' realization of \eqn{e^{O3}_{it1},...,e^{O3}_{itJ}}, respectively, for
 #' \eqn{t=1,\ldots,\code{clsize}}.
 #'
+#'
 #' @param clsize integer indicating the common cluster size.
-#' @param ncategories integer indicating the number of nominal response
-#' categories.
+#' @param intercepts numerical vector or matrix containing the intercepts of
+#' the marginal adjacent-category logit model.
 #' @param betas numerical vector or matrix containing the value of the marginal
 #' regression parameter vector.
 #' @param xformula formula expression as in other marginal regression models
@@ -67,11 +70,12 @@
 #' response variables (y), the covariates specified by \code{xformula},
 #' subjects' identities (id) and the corresponding measurement occasions
 #' (time).} \item{rlatent}{the latent random variables denoted by
-#' \eqn{e^{NO}_{it}} in \cite{Touloumis (2016)}.}
+#' \eqn{e^{O3}_{itj}} in the Vignette.}
 #' @author Anestis Touloumis
 #' @seealso \code{\link{rbin}} for simulating correlated binary responses,
-#' \code{\link{rmult.clm}}, \code{\link{rmult.crm}} and
-#' \code{\link{rmult.acl}} for simulating correlated ordinal responses.
+#' \code{\link{rmult.clm}} and \code{\link{rmult.crm}} for simulating
+#' correlated ordinal responses, and \code{\link{rmult.bcl}} for simulating
+#' nominal responses.
 #' @references Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
 #' generating random vectors with arbitrary marginal distributions and
 #' correlation matrix}. Technical Report, Department of Industrial Engineering
@@ -81,9 +85,6 @@
 #' specified univariate distributions and correlation coefficients. \emph{IEEE
 #' Transactions on Systems, Man and Cybernetics} \bold{5}, 557--561.
 #'
-#' McFadden, D. (1974) \emph{Conditional logit analysis of qualitative choice
-#' behavior}. New York: Academic Press, 105--142.
-#'
 #' Touloumis, A. (2016) Simulating Correlated Binary and Multinomial Responses
 #' under Marginal Model Specification: The SimCorMultRes Package. \emph{The R
 #' Journal} \bold{8}, 79--91.
@@ -91,53 +92,42 @@
 #' Touloumis, A., Agresti, A. and Kateri, M. (2013) GEE for multinomial
 #' responses using a local odds ratios parameterization. \emph{Biometrics}
 #' \bold{69}, 633--640.
+#'
 #' @examples
-#' ## See Example 3.1 in the Vignette.
-#' betas <- c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
+#' ## See Example 3.4 in the Vignette.
+#' beta_intercepts <- c(3, 1, 2)
+#' beta_coefficients <- c(1, 1)
 #' sample_size <- 500
-#' categories_no <- 4
 #' cluster_size <- 3
-#' set.seed(1)
+#' set.seed(321)
 #' x1 <- rep(rnorm(sample_size), each = cluster_size)
 #' x2 <- rnorm(sample_size * cluster_size)
 #' xdata <- data.frame(x1, x2)
+#' identity_matrix <- diag(4)
 #' equicorrelation_matrix <- toeplitz(c(1, rep(0.95, cluster_size - 1)))
-#' identity_matrix <- diag(categories_no)
 #' latent_correlation_matrix <- kronecker(equicorrelation_matrix,
 #'   identity_matrix)
-#' simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
-#'   ncategories = categories_no, betas = betas, xformula = ~ x1 + x2,
-#'   xdata = xdata, cor.matrix = latent_correlation_matrix)
+#' simulated_ordinal_dataset <- rmult.acl(clsize = cluster_size,
+#'   intercepts = beta_intercepts, betas = beta_coefficients,
+#'   xformula = ~ x1 + x2, xdata = xdata,
+#'   cor.matrix = latent_correlation_matrix)
 #' suppressPackageStartupMessages(library("multgee"))
-#' nominal_gee_model <- nomLORgee(y ~ x1 + x2,
-#'   data = simulated_nominal_dataset$simdata, id = id, repeated = time,
-#'   LORstr = "time.exch")
-#' round(coef(nominal_gee_model), 2)
+#' ordinal_gee_model <- ordLORgee(y ~ x1 + x2,
+#'   data = simulated_ordinal_dataset$simdata, id = id, repeated = time,
+#'   LORstr = "time.exch", link = "acl")
+#' round(coef(ordinal_gee_model), 2)
 #' @export
-rmult.bcl <- function(clsize = clsize, ncategories = ncategories, betas = betas, # nolint
+rmult.acl <- function(clsize = clsize, intercepts = intercepts, betas = betas, # nolint
                       xformula = formula(xdata), xdata = parent.frame(), cor.matrix = cor.matrix, # nolint
                       rlatent = NULL) {
   check_cluster_size(clsize)
-  categories_no <- check_ncategories(ncategories)
-  betas <- check_betas(betas, clsize)
-  linear_predictor_formula <- check_xformula(xformula)
-  if (!is.environment(xdata)) xdata <- data.frame(na.omit(xdata))
-  linear_predictor <- create_linear_predictor(
-    betas, clsize, linear_predictor_formula, xdata, "rmult.bcl", categories_no
+  beta_intercepts <- check_intercepts(intercepts, clsize, "rmult.acl")
+  categories_no <- ncol(beta_intercepts) + 1
+  beta_coefficients <- check_betas(betas, clsize)
+  betas_bcl <- create_betas_acl2bcl(
+    beta_intercepts, categories_no, beta_coefficients
   )
-  sample_size <- nrow(linear_predictor)
-  simulated_latent_responses <- create_rlatent(
-    rlatent, sample_size, "cloglog", clsize, cor.matrix, "rmult.bcl",
-    categories_no
-  )
-  simulated_nominal_responses <- apply_threshold(
-    linear_predictor, simulated_latent_responses, clsize, "rmult.bcl",
-    categories_no = categories_no
-  )
-  linear_predictor_formula <- update(linear_predictor_formula, ~ . - 1)
-  create_output(
-    simulated_nominal_responses, sample_size, clsize,
-    simulated_latent_responses, linear_predictor_formula, xdata, "rmult.bcl",
-    categories_no = categories_no
+  rmult.bcl(
+    clsize, categories_no, betas_bcl, xformula, xdata, cor.matrix, rlatent
   )
 }

@@ -91,31 +91,37 @@ element (\eqn{i,t}) of \code{rlatent} represents the realization of
 \eqn{e^{B}_{it}}.
 }
 \examples{
-## See Example 3.4 in the Vignette.
-set.seed(123)
-N <- 5000
-clsize <- 4
-intercepts <- 0
-betas <- 0.2
-cor.matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
-x <- rep(rnorm(N), each = clsize)
-CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
-    xformula = ~x, cor.matrix = cor.matrix, link = 'probit')
-library(gee)
-binGEEmod <- gee(y ~ x, family = binomial('probit'), id = id, data = CorBinRes$simdata)
-summary(binGEEmod)$coefficients
-
 ## See Example 3.5 in the Vignette.
+set.seed(123)
+sample_size <- 5000
+cluster_size <- 4
+beta_intercepts <- 0
+beta_coefficients <- 0.2
+latent_correlation_matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
+x <- rep(rnorm(sample_size), each = cluster_size)
+simulated_binary_dataset <- rbin(clsize = cluster_size,
+  intercepts = beta_intercepts, betas = beta_coefficients,
+  xformula = ~x, cor.matrix = latent_correlation_matrix, link = "probit")
+library(gee)
+binary_gee_model <- gee(y ~ x, family = binomial("probit"), id = id,
+  data = simulated_binary_dataset$simdata)
+summary(binary_gee_model)$coefficients
+
+## See Example 3.6 in the Vignette.
 set.seed(8)
 library(evd)
-rlatent1 <- rmvevd(N, dep = sqrt(1 - 0.9), model = 'log', d = clsize)
-rlatent2 <- rmvevd(N, dep = sqrt(1 - 0.9), model = 'log', d = clsize)
-rlatent <- rlatent1 - rlatent2
-CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
-    xformula = ~x, rlatent = rlatent)
-binGEEmod <- gee(y ~ x, family = binomial('logit'), id = id, data = CorBinRes$simdata)
-summary(binGEEmod)$coefficients
-
+simulated_latent_variables1 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+  model = "log", d = cluster_size)
+  simulated_latent_variables2 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+  model = "log", d = cluster_size)
+simulated_latent_variables <- simulated_latent_variables1 -
+  simulated_latent_variables2
+simulated_binary_dataset <- rbin(clsize = cluster_size,
+  intercepts = beta_intercepts, betas = beta_coefficients,
+  xformula = ~x, rlatent = simulated_latent_variables)
+binary_gee_model <- gee(y ~ x, family = binomial("logit"), id = id,
+  data = simulated_binary_dataset$simdata)
+summary(binary_gee_model)$coefficients
 }
 \references{
 Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
@@ -137,8 +143,8 @@ Journal} \bold{8}, 79--91.
 }
 \seealso{
 \code{\link{rmult.bcl}} for simulating correlated nominal
-responses, \code{\link{rmult.clm}} and \code{\link{rmult.crm}} for
-simulating correlated ordinal responses.
+responses, \code{\link{rmult.clm}}, \code{\link{rmult.crm}} and
+\code{\link{rmult.acl}} for simulating correlated ordinal responses.
 }
 \author{
 Anestis Touloumis

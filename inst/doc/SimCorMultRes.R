@@ -1,7 +1,7 @@
 ## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(
   tidy = TRUE,
-  collapse = TRUE, 
+  collapse = TRUE,
   comment = "#>"
   )
 
@@ -9,150 +9,217 @@ knitr::opts_chunk$set(
 # parameter vector
 betas <-  c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
 # sample size
-N <- 500 
+sample_size <- 500 
 # number of nominal response categories
-ncategories <- 4  
+categories_no <- 4  
 # cluster size
-clsize <- 3 
+cluster_size <- 3 
 set.seed(1) 
 # time-stationary covariate x_{i1}
-x1 <- rep(rnorm(N), each = clsize)
+x1 <- rep(rnorm(sample_size), each = cluster_size)
 # time-varying covariate x_{it2}
-x2 <- rnorm(N * clsize) 
+x2 <- rnorm(sample_size * cluster_size) 
 # create covariates dataframe 
 xdata <- data.frame(x1, x2) 
 set.seed(321)
 library(SimCorMultRes)
-# correlation matrix for the NORTA method
-cor.matrix <- kronecker(toeplitz(c(1,rep(0.95,clsize-1))),diag(ncategories)) 
+# latent correlation matrix for the NORTA method
+equicorrelation_matrix <- toeplitz(c(1, rep(0.95,cluster_size - 1)))
+identity_matrix <- diag(categories_no)
+latent_correlation_matrix <- kronecker(equicorrelation_matrix, identity_matrix) 
 # simulation of clustered nominal responses
-CorNorRes <- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas, xformula = ~x1 + x2, xdata = xdata, cor.matrix = cor.matrix)
+simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
+                                         ncategories = categories_no, 
+                                         betas = betas, xformula = ~ x1 + x2,
+                                         xdata = xdata,
+                                         cor.matrix = latent_correlation_matrix)
 suppressPackageStartupMessages(library("multgee"))
 # fitting a GEE model
-fit <- nomLORgee(y~x1+x2,data=CorNorRes$simdata,id=id,repeated=time,LORstr="time.exch")
+nominal_gee_model <- nomLORgee(y ~ x1 + x2,
+                               data = simulated_nominal_dataset$simdata, id = id,
+                               repeated = time, LORstr="time.exch")
 # checking regression coefficients
-round(coef(fit),2)
+round(coef(nominal_gee_model), 2)
 
 ## ------------------------------------------------------------------------
 set.seed(12345)
 # sample size
-N <- 500
+sample_size <- 500
 # cluster size
-clsize <- 4
+cluster_size <- 4
 # category-specific intercepts
-intercepts <- c(-1.5, -0.5, 0.5, 1.5)
+beta_intercepts <- c(-1.5, -0.5, 0.5, 1.5)
 # time-varying regression parameters associated with covariates
-betas <- matrix(c(1, 2, 3, 4), 4, 1)
+beta_coefficients <- matrix(c(1, 2, 3, 4), 4, 1)
 # time-stationary covariate 
-x <- rep(rnorm(N), each = clsize)
-# correlation matrix for the NORTA method
-cor.matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
+x <- rep(rnorm(sample_size), each = cluster_size)
+# latent correlation matrix for the NORTA method
+latent_correlation_matrix <- toeplitz(c(1, 0.85, 0.5, 0.15))
 # simulation of ordinal responses
-CorOrdRes <- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size,
+                                       intercepts = beta_intercepts,
+                                       betas = beta_coefficients,
+                                       xformula = ~ x,
+                                       cor.matrix = latent_correlation_matrix,
+                                       link = "probit")
 # first eight rows of the simulated dataframe
-head(CorOrdRes$simdata, n = 8)
+head(simulated_ordinal_dataset$simdata, n = 8)
 
 ## ------------------------------------------------------------------------
 set.seed(1)
 # sample size
-N <- 500
+sample_size <- 500
 # cluster size
-clsize <- 4
+cluster_size <- 4
 # category-specific intercepts
-intercepts <- c(-1.5, -0.5, 0.5, 1.5)
+beta_intercepts <- c(-1.5, -0.5, 0.5, 1.5)
 # regression parameters associated with covariates
-betas <- 1
+beta_coefficients <- 1
 # time-varying covariate
-x <- rnorm(N * clsize)
+x <- rnorm(sample_size * cluster_size)
 # number of ordinal response categories
-ncategories <- 5
+categories_no <- 5
 # correlation matrix for the NORTA method
-cor.matrix <- diag(1, (ncategories - 1) * clsize) + kronecker(toeplitz(c(0, 
-    rep(0.24, ncategories - 2))), matrix(1, clsize, clsize))
+latent_correlation_matrix <- diag(1, (categories_no - 1) * cluster_size) +
+  kronecker(toeplitz(c(0, rep(0.24, categories_no - 2))), matrix(1, cluster_size, cluster_size))
 # simulation of ordinal responses
-CorOrdRes <- rmult.crm(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+simulated_ordinal_dataset <- rmult.crm(clsize = cluster_size,
+                                       intercepts = beta_intercepts,
+                                       betas = beta_coefficients,
+                                       xformula = ~ x,
+                                       cor.matrix = latent_correlation_matrix,
+                                       link = "probit")
 # first six clusters with ordinal responses
-head(CorOrdRes$Ysim)
+head(simulated_ordinal_dataset$Ysim)
+
+## ---- tidy=TRUE----------------------------------------------------------
+# intercepts
+beta_intercepts <- c(3, 2, 1)
+# parameter vector
+beta_coefficients <- c(1, 1)
+# sample size
+sample_size <- 500 
+# cluster size
+cluster_size <- 3 
+set.seed(321) 
+# time-stationary covariate x_{i1}
+x1 <- rep(rnorm(sample_size), each = cluster_size)
+# time-varying covariate x_{it2}
+x2 <- rnorm(sample_size * cluster_size) 
+# create covariates dataframe 
+xdata <- data.frame(x1, x2) 
+# correlation matrix for the NORTA method
+equicorrelation_matrix <- toeplitz(c(1, rep(0.95, cluster_size - 1)))
+identity_matrix <- diag(4)
+latent_correlation_matrix <- kronecker(equicorrelation_matrix, identity_matrix) 
+# simulation of clustered ordinal responses
+simulated_ordinal_dataset <- rmult.acl(clsize = cluster_size,
+                                       intercepts = beta_intercepts,
+                                       betas = beta_coefficients,
+                                       xformula = ~ x1 + x2, xdata = xdata,
+                                       cor.matrix = latent_correlation_matrix)
+suppressPackageStartupMessages(library("multgee"))
+# fitting a GEE model
+ordinal_gee_model <- ordLORgee(y ~ x1 + x2,
+                               data = simulated_ordinal_dataset$simdata,
+                               id = id, repeated = time, LORstr = "time.exch",
+                               link = "acl")
+# checking regression coefficients
+round(coef(ordinal_gee_model), 2)
 
 ## ------------------------------------------------------------------------
 set.seed(123)
 # sample size
-N <- 100
+sample_size <- 100
 # cluster size
-clsize <- 4
+cluster_size <- 4
 # intercept
-intercepts <- 0
+beta_intercepts <- 0
 # regression parameter associated with the covariate
-betas <- 0.2
+beta_coefficients <- 0.2
 # correlation matrix for the NORTA method
-cor.matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
+latent_correlation_matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
 # time-stationary covariate
-x <- rep(rnorm(N), each = clsize)
+x <- rep(rnorm(sample_size), each = cluster_size)
 # simulation of clustered binary responses
-CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+simulated_binary_dataset <- rbin(clsize = cluster_size,
+                                 intercepts = beta_intercepts,
+                                 betas = beta_coefficients, xformula = ~ x,
+                                 cor.matrix = latent_correlation_matrix,
+                                 link = "probit")
 library(gee)
 # fitting a GEE model
-binGEEmod <- gee(y ~ x, family = binomial("probit"), id = id, data = CorBinRes$simdata)
+binary_gee_model <- gee(y ~ x, family = binomial("probit"), id = id,
+                        data = simulated_binary_dataset$simdata)
 # checking the estimated coefficients
-summary(binGEEmod)$coefficients
+summary(binary_gee_model)$coefficients
 
 ## ------------------------------------------------------------------------
 set.seed(8)
 # simulation of epsilon variables
 library(evd)
-rlatent1 <- rmvevd(N, dep = sqrt(1 - 0.9), model = "log", d = clsize)
-rlatent2 <- rmvevd(N, dep = sqrt(1 - 0.9), model = "log", d = clsize)
-rlatent <- rlatent1 - rlatent2
+simulated_latent_variables1 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+                                      model = "log", d = cluster_size)
+simulated_latent_variables2 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+                                      model = "log", d = cluster_size)
+simulated_latent_variables <- simulated_latent_variables1 -
+  simulated_latent_variables2
 # simulation of clustered binary responses
-CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, rlatent = rlatent)
+simulated_binary_dataset <- rbin(clsize = cluster_size,
+                                 intercepts = beta_intercepts,
+                                 betas = beta_coefficients, xformula = ~ x,
+                                 rlatent = simulated_latent_variables)
 # fitting a GEE model
-binGEEmod <- gee(y ~ x, family = binomial("logit"), id = id, data = CorBinRes$simdata)
+binary_gee_model <- gee(y ~ x, family = binomial("logit"), id = id,
+                        data = simulated_binary_dataset$simdata)
 # checking the estimated coefficients
-summary(binGEEmod)$coefficients
+summary(binary_gee_model)$coefficients
 
 ## ------------------------------------------------------------------------
 set.seed(123)
 # sample size
-N <- 5000
+sample_size <- 5000
 # cluster size
-clsize <- 4
+cluster_size <- 4
 # intercept
-intercepts <- qnorm(0.8)
+beta_intercepts <- qnorm(0.8)
 # pseudo-covariate
-x <- rep(0, each = clsize * N)
+x <- rep(0, each = cluster_size * sample_size)
 # regression parameter associated with the covariate
-betas <- 0
+beta_coefficients <- 0
 # correlation matrix for the NORTA method
-cor.matrix <- diag(clsize)
+latent_correlation_matrix <- diag(cluster_size)
 # simulation of clustered binary responses
-CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = "probit")
+simulated_binary_dataset <- rbin(clsize = cluster_size,
+                                 intercepts = beta_intercepts,
+                                 betas = beta_coefficients, xformula = ~x,
+                                 cor.matrix = latent_correlation_matrix,
+                                 link = "probit")
 library(gee)
 # simulated marginal probabilities
-colMeans(CorBinRes$Ysim)
+colMeans(simulated_binary_dataset$Ysim)
 
 ## ---- tidy=TRUE----------------------------------------------------------
 # sample size
-N <- 5000
+sample_size <- 5000
 # cluster size
-clsize <- 3 
+cluster_size <- 3 
 # pseudo-covariate 
-x <- rep(0, each = clsize * N)
+x <- rep(0, each = cluster_size * sample_size)
 # parameter vector
 betas <-  c(log(0.1/0.4), 0, log(0.2/0.4), 0, log(0.3/0.4), 0, 0, 0)
 # number of nominal response categories
-ncategories <- 4  
+categories_no <- 4  
 set.seed(1) 
 # correlation matrix for the NORTA method
-cor.matrix <- kronecker(toeplitz(c(1,rep(0,clsize-1))),diag(ncategories)) 
+latent_correlation_matrix <- kronecker(diag(cluster_size), diag(categories_no)) 
 # simulation of clustered nominal responses
-CorNorRes <- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas, xformula = ~x, cor.matrix = cor.matrix)
+simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
+                                       ncategories = categories_no,
+                                       betas = betas, xformula = ~ x,
+                                       cor.matrix = latent_correlation_matrix)
 # simulated marginal probabilities
-apply(CorNorRes$Ysim,2,table)/N
+apply(simulated_nominal_dataset$Ysim, 2, table) / sample_size
 
 ## ---- comment=""---------------------------------------------------------
 citation("SimCorMultRes")

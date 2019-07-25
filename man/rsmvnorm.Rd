@@ -29,12 +29,13 @@ assessed via eigenvalues.
 ## Simulating 10000 bivariate random vectors with correlation parameter
 ## equal to 0.4.
 set.seed(1)
-R <- 10000
-cor.matrix <- toeplitz(c(1, 0.4))
-SimBivariateNormal <- rsmvnorm(R = R, cor.matrix = cor.matrix)
-colMeans(SimBivariateNormal)
-apply(SimBivariateNormal, 2, sd)
-cor(SimBivariateNormal)
+sample_size <- 10000
+correlation_matrix <- toeplitz(c(1, 0.4))
+simulated_normal_responses <- rsmvnorm(R = sample_size,
+  cor.matrix = correlation_matrix)
+colMeans(simulated_normal_responses)
+apply(simulated_normal_responses, 2, sd)
+cor(simulated_normal_responses)
 }
 \author{
 Anestis Touloumis

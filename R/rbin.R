@@ -71,11 +71,12 @@
 #' \eqn{e^{B}_{it}} in \cite{Touloumis (2016)}.}
 #' @importFrom evd qgumbel
 #' @importFrom methods formalArgs
-#' @importFrom stats as.formula formula model.frame model.matrix pnorm qcauchy qlogis rnorm terms toeplitz update
+#' @importFrom stats as.formula formula model.frame model.matrix pnorm qcauchy
+#' qlogis rnorm terms toeplitz update
 #' @author Anestis Touloumis
 #' @seealso \code{\link{rmult.bcl}} for simulating correlated nominal
-#' responses, \code{\link{rmult.clm}} and \code{\link{rmult.crm}} for
-#' simulating correlated ordinal responses.
+#' responses, \code{\link{rmult.clm}}, \code{\link{rmult.crm}} and
+#' \code{\link{rmult.acl}} for simulating correlated ordinal responses.
 #' @references Cario, M. C. and Nelson, B. L. (1997) \emph{Modeling and
 #' generating random vectors with arbitrary marginal distributions and
 #' correlation matrix}. Technical Report, Department of Industrial Engineering
@@ -93,44 +94,59 @@
 #' under Marginal Model Specification: The SimCorMultRes Package. \emph{The R
 #' Journal} \bold{8}, 79--91.
 #' @examples
-#' ## See Example 3.4 in the Vignette.
-#' set.seed(123)
-#' N <- 5000
-#' clsize <- 4
-#' intercepts <- 0
-#' betas <- 0.2
-#' cor.matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
-#' x <- rep(rnorm(N), each = clsize)
-#' CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
-#'     xformula = ~x, cor.matrix = cor.matrix, link = 'probit')
-#' library(gee)
-#' binGEEmod <- gee(y ~ x, family = binomial('probit'), id = id, data = CorBinRes$simdata)
-#' summary(binGEEmod)$coefficients
-#'
 #' ## See Example 3.5 in the Vignette.
+#' set.seed(123)
+#' sample_size <- 5000
+#' cluster_size <- 4
+#' beta_intercepts <- 0
+#' beta_coefficients <- 0.2
+#' latent_correlation_matrix <- toeplitz(c(1, 0.9, 0.9, 0.9))
+#' x <- rep(rnorm(sample_size), each = cluster_size)
+#' simulated_binary_dataset <- rbin(clsize = cluster_size,
+#'   intercepts = beta_intercepts, betas = beta_coefficients,
+#'   xformula = ~x, cor.matrix = latent_correlation_matrix, link = "probit")
+#' library(gee)
+#' binary_gee_model <- gee(y ~ x, family = binomial("probit"), id = id,
+#'   data = simulated_binary_dataset$simdata)
+#' summary(binary_gee_model)$coefficients
+#'
+#' ## See Example 3.6 in the Vignette.
 #' set.seed(8)
 #' library(evd)
-#' rlatent1 <- rmvevd(N, dep = sqrt(1 - 0.9), model = 'log', d = clsize)
-#' rlatent2 <- rmvevd(N, dep = sqrt(1 - 0.9), model = 'log', d = clsize)
-#' rlatent <- rlatent1 - rlatent2
-#' CorBinRes <- rbin(clsize = clsize, intercepts = intercepts, betas = betas,
-#'     xformula = ~x, rlatent = rlatent)
-#' binGEEmod <- gee(y ~ x, family = binomial('logit'), id = id, data = CorBinRes$simdata)
-#' summary(binGEEmod)$coefficients
-#'
+#' simulated_latent_variables1 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+#'   model = "log", d = cluster_size)
+#'   simulated_latent_variables2 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
+#'   model = "log", d = cluster_size)
+#' simulated_latent_variables <- simulated_latent_variables1 -
+#'   simulated_latent_variables2
+#' simulated_binary_dataset <- rbin(clsize = cluster_size,
+#'   intercepts = beta_intercepts, betas = beta_coefficients,
+#'   xformula = ~x, rlatent = simulated_latent_variables)
+#' binary_gee_model <- gee(y ~ x, family = binomial("logit"), id = id,
+#'   data = simulated_binary_dataset$simdata)
+#' summary(binary_gee_model)$coefficients
 #' @export
 rbin <- function(clsize = clsize, intercepts = intercepts, betas = betas,
-    xformula = formula(xdata), xdata = parent.frame(), link = "logit",
-    cor.matrix = cor.matrix, rlatent = NULL) {
-    check_cluster_size(clsize)
-    intercepts <- check_intercepts(intercepts, clsize, "rbin")
-    betas <- check_betas(betas, clsize)
-    lpformula <- check_xformula(xformula)
-    if (!is.environment(xdata))
-      xdata <- data.frame(na.omit(xdata))
-    lin_pred <- create_linear_predictor(betas, clsize, lpformula, xdata, "rbin")
-    R <- nrow(lin_pred)
-    rlatent <- create_rlatent(rlatent, R, link, clsize, cor.matrix, "rbin")
-    Ysim <- apply_threshold(lin_pred, rlatent, clsize, "rbin", intercepts)
-    create_output(Ysim, R, clsize, rlatent, lpformula, xdata, "rbin")
+                 xformula = formula(xdata), xdata = parent.frame(), link = "logit", # nolintr
+                 cor.matrix = cor.matrix, rlatent = NULL) { # nolint
+  check_cluster_size(clsize)
+  beta_intercepts <- check_intercepts(intercepts, clsize, "rbin")
+  beta_coefficients <- check_betas(betas, clsize)
+  linear_predictor_formula <- check_xformula(xformula)
+  if (!is.environment(xdata)) xdata <- data.frame(na.omit(xdata))
+  linear_predictor <- create_linear_predictor(
+    beta_coefficients, clsize, linear_predictor_formula, xdata, "rbin"
+  )
+  sample_size <- nrow(linear_predictor)
+  simulated_latent_variables <- create_rlatent(
+    rlatent, sample_size, link, clsize, cor.matrix, "rbin"
+  )
+  simulated_binary_responses <- apply_threshold(
+    linear_predictor, simulated_latent_variables, clsize, "rbin",
+    beta_intercepts
+  )
+  create_output(
+    simulated_binary_responses, sample_size, clsize, simulated_latent_variables,
+    linear_predictor_formula, xdata, "rbin"
+  )
 }

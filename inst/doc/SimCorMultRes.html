@@ -7,11 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Anestis Touloumis" />
 
-<meta name="date" content="2018-07-10" />
+<meta name="date" content="2019-07-25" />
 
 <title>Simulating Correlated Binary and Multinomial Responses with SimCorMultRes</title>
 
@@ -256,9 +257,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -283,22 +282,80 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -308,8 +365,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Simulating Correlated Binary and Multinomial Responses with SimCorMultRes</h1>
-<h4 class="author"><em>Anestis Touloumis</em></h4>
-<h4 class="date"><em>10 July 2018</em></h4>
+<h4 class="author">Anestis Touloumis</h4>
+<h4 class="date">25 July 2019</h4>
 
 </div>
 
@@ -322,6 +379,7 @@ $(document).ready(function () {
 <li><a href="#correlated-ordinal-responses"><span class="toc-section-number">3.2</span> Correlated ordinal responses</a><ul>
 <li><a href="#marginal-cumulative-link-model"><span class="toc-section-number">3.2.1</span> Marginal cumulative link model</a></li>
 <li><a href="#marginal-continuation-ratio-model"><span class="toc-section-number">3.2.2</span> Marginal continuation-ratio model</a></li>
+<li><a href="#marginal-adjacent-category-logit-model"><span class="toc-section-number">3.2.3</span> Marginal adjacent-category logit model</a></li>
 </ul></li>
 <li><a href="#correlated-binary-responses"><span class="toc-section-number">3.3</span> Correlated binary responses</a></li>
 <li><a href="#no-marginal-model-specification"><span class="toc-section-number">3.4</span> No marginal model specification</a></li>
@@ -333,12 +391,12 @@ $(document).ready(function () {
 
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>The R package <code>SimCorMultRes</code> is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. This vignette briefly describes the simulation methods proposed by <span class="citation">Touloumis (<a href="#ref-Touloumis2016">2016</a>)</span> and illustrates the use of the core functions of <code>SimCorMultRes</code>. A more detailed description of <code>SimCorMultRes</code> can be found in <span class="citation">Touloumis (<a href="#ref-Touloumis2016">2016</a>)</span>.</p>
+<p>The R package <code>SimCorMultRes</code> is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. This vignette briefly describes the simulation methods proposed by <span class="citation">Touloumis (<a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span> and illustrates the use of the core functions of <code>SimCorMultRes</code>. A more detailed description of <code>SimCorMultRes</code> can be found in <span class="citation">Touloumis (<a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span>.</p>
 </div>
 <div id="areas-of-applications" class="section level1">
 <h1><span class="header-section-number">2</span> Areas of Applications</h1>
-<p>This package was created to facilitate the task of carrying out simulation studies and evaluating the performance of statistical method(s) for estimating the regression parameters in a marginal model with clustered binary and multinomial responses. Examples of such statistical methods include maximum likelihood methods, copula approaches, quasi-least squares approaches, generalized quasi-likelihood methods and generalized estimating equations (GEE) approaches among others <span class="citation">(see references in Touloumis <a href="#ref-Touloumis2016">2016</a>)</span>.</p>
-<p>In addition, <code>SimCorMultRes</code> can be used to generate correlated binary and multinomial random variables conditional on a desired dependence structure and known marginal probabilities even if these are not determined by a regression model <span class="citation">(see third example in Touloumis <a href="#ref-Touloumis2016">2016</a>)</span> or to explore approximations of association measures for discrete variables that arise as realizations of an underlying continuum <span class="citation">(see second example in Touloumis <a href="#ref-Touloumis2016">2016</a>)</span>.</p>
+<p>This package was created to facilitate the task of carrying out simulation studies and evaluating the performance of statistical methods for estimating the regression parameters in a marginal model with clustered binary and multinomial responses. Examples of such statistical methods include maximum likelihood methods, copula approaches, quasi-least squares approaches, generalized quasi-likelihood methods and generalized estimating equations (GEE) approaches among others <span class="citation">(see references in Touloumis <a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span>.</p>
+<p>In addition, <code>SimCorMultRes</code> can generate correlated binary and multinomial random variables conditional on a desired dependence structure and known marginal probabilities even if these are not determined by a regression model <span class="citation">(see third example in Touloumis <a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span> or to explore approximations of association measures for discrete variables that arise as realizations of an underlying continuum <span class="citation">(see second example in Touloumis <a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span>.</p>
 </div>
 <div id="simulation-methods" class="section level1">
 <h1><span class="header-section-number">3</span> Simulation Methods</h1>
@@ -360,7 +418,7 @@ and where the random variables <span class="math inline">\(\{e^{NO}_{itj}:i=1,\l
 <li><span class="math inline">\(e^{NO}_{i_1t_1j_1}\)</span> and <span class="math inline">\(e^{NO}_{i_2t_2j_2}\)</span> are independent random variables provided that <span class="math inline">\(i_1 \neq i_2\)</span>.</li>
 <li><span class="math inline">\(e^{NO}_{itj_1}\)</span> and <span class="math inline">\(e^{NO}_{itj_2}\)</span> are independent random variables provided that <span class="math inline">\(j_1\neq j_2\)</span>.</li>
 </ol>
-<p>For each subject <span class="math inline">\(i\)</span>, the association structure among the clustered nominal responses <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span> depends on the joint distribution and correlation matrix of <span class="math inline">\(\{e^{NO}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span>. If the random variables <span class="math inline">\(\{e^{N}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span> are independent then so are <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span>.
+<p>For each subject <span class="math inline">\(i\)</span>, the association structure among the clustered nominal responses <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span> depends on the joint distribution and correlation matrix of <span class="math inline">\(\{e^{NO}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span>. If the random variables <span class="math inline">\(\{e^{NO}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span> are independent then so are <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span>.
 </p>
 
 <div class="example">
@@ -381,31 +439,33 @@ for all <span class="math inline">\(i=1,\ldots,500\)</span>.
 <pre class="r"><code># parameter vector
 betas &lt;- c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
 # sample size
-N &lt;- 500
+sample_size &lt;- 500
 # number of nominal response categories
-ncategories &lt;- 4
+categories_no &lt;- 4
 # cluster size
-clsize &lt;- 3
+cluster_size &lt;- 3
 set.seed(1)
 # time-stationary covariate x_{i1}
-x1 &lt;- rep(rnorm(N), each = clsize)
+x1 &lt;- rep(rnorm(sample_size), each = cluster_size)
 # time-varying covariate x_{it2}
-x2 &lt;- rnorm(N * clsize)
+x2 &lt;- rnorm(sample_size * cluster_size)
 # create covariates dataframe
 xdata &lt;- data.frame(x1, x2)
 set.seed(321)
 library(SimCorMultRes)
-# correlation matrix for the NORTA method
-cor.matrix &lt;- kronecker(toeplitz(c(1, rep(0.95, clsize - 1))), diag(ncategories))
+# latent correlation matrix for the NORTA method
+equicorrelation_matrix &lt;- toeplitz(c(1, rep(0.95, cluster_size - 1)))
+identity_matrix &lt;- diag(categories_no)
+latent_correlation_matrix &lt;- kronecker(equicorrelation_matrix, identity_matrix)
 # simulation of clustered nominal responses
-CorNorRes &lt;- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas, 
-    xformula = ~x1 + x2, xdata = xdata, cor.matrix = cor.matrix)
+simulated_nominal_dataset &lt;- rmult.bcl(clsize = cluster_size, ncategories = categories_no, 
+    betas = betas, xformula = ~x1 + x2, xdata = xdata, cor.matrix = latent_correlation_matrix)
 suppressPackageStartupMessages(library(&quot;multgee&quot;))
 # fitting a GEE model
-fit &lt;- nomLORgee(y ~ x1 + x2, data = CorNorRes$simdata, id = id, repeated = time, 
-    LORstr = &quot;time.exch&quot;)
+nominal_gee_model &lt;- nomLORgee(y ~ x1 + x2, data = simulated_nominal_dataset$simdata, 
+    id = id, repeated = time, LORstr = &quot;time.exch&quot;)
 # checking regression coefficients
-round(coef(fit), 2)
+round(coef(nominal_gee_model), 2)
 #&gt; beta10   x1:1   x2:1 beta20   x1:2   x2:2 beta30   x1:3   x2:3 
 #&gt;   1.07   3.18   1.99   1.35   3.40   1.70   0.89   3.06   2.22</code></pre>
 </div>
@@ -449,22 +509,23 @@ where <span class="math inline">\(\Phi\)</span> denotes the cdf of the standard 
 
 <pre class="r"><code>set.seed(12345)
 # sample size
-N &lt;- 500
+sample_size &lt;- 500
 # cluster size
-clsize &lt;- 4
+cluster_size &lt;- 4
 # category-specific intercepts
-intercepts &lt;- c(-1.5, -0.5, 0.5, 1.5)
+beta_intercepts &lt;- c(-1.5, -0.5, 0.5, 1.5)
 # time-varying regression parameters associated with covariates
-betas &lt;- matrix(c(1, 2, 3, 4), 4, 1)
+beta_coefficients &lt;- matrix(c(1, 2, 3, 4), 4, 1)
 # time-stationary covariate
-x &lt;- rep(rnorm(N), each = clsize)
-# correlation matrix for the NORTA method
-cor.matrix &lt;- toeplitz(c(1, 0.85, 0.5, 0.15))
+x &lt;- rep(rnorm(sample_size), each = cluster_size)
+# latent correlation matrix for the NORTA method
+latent_correlation_matrix &lt;- toeplitz(c(1, 0.85, 0.5, 0.15))
 # simulation of ordinal responses
-CorOrdRes &lt;- rmult.clm(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = &quot;probit&quot;)
+simulated_ordinal_dataset &lt;- rmult.clm(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x, cor.matrix = latent_correlation_matrix, 
+    link = &quot;probit&quot;)
 # first eight rows of the simulated dataframe
-head(CorOrdRes$simdata, n = 8)
+head(simulated_ordinal_dataset$simdata, n = 8)
 #&gt;   y         x id time
 #&gt; 1 1 0.5855288  1    1
 #&gt; 2 2 0.5855288  1    2
@@ -479,7 +540,7 @@ head(CorOrdRes$simdata, n = 8)
 <h3><span class="header-section-number">3.2.2</span> Marginal continuation-ratio model</h3>
 <p>The function <code>rmult.crm</code> simulates clustered ordinal responses under the marginal continuation-ratio model
 <span class="math display" id="eq:MCRM">\[\begin{equation}
-\Pr(Y_{it}=j |Y_{it} \ge j,\mathbf {x}_{it})=F(\beta_{tj0} +\boldsymbol {\beta}^{'}_t \mathbf {x}_{it})
+\Pr(Y_{it}=j |Y_{it} \ge j,\mathbf {x}_{it})=F(\beta_{tj0} +\boldsymbol {\beta}^{&#39;}_t \mathbf {x}_{it})
 \tag{3.3}
 \end{equation}\]</span>
 where <span class="math inline">\(\beta_{tj0}\)</span> is the <span class="math inline">\(j\)</span>-th category-specific intercept at measurement occasion <span class="math inline">\(t\)</span>, <span class="math inline">\(\boldsymbol \beta_t\)</span> is the regression parameter vector associated with the covariates at measurement occasion <span class="math inline">\(t\)</span> and <span class="math inline">\(F\)</span> is a cdf. This is accomplished by utilizing the threshold
@@ -511,25 +572,26 @@ with <span class="math inline">\(N=500\)</span>, <span class="math inline">\(T=4
 
 <pre class="r"><code>set.seed(1)
 # sample size
-N &lt;- 500
+sample_size &lt;- 500
 # cluster size
-clsize &lt;- 4
+cluster_size &lt;- 4
 # category-specific intercepts
-intercepts &lt;- c(-1.5, -0.5, 0.5, 1.5)
+beta_intercepts &lt;- c(-1.5, -0.5, 0.5, 1.5)
 # regression parameters associated with covariates
-betas &lt;- 1
+beta_coefficients &lt;- 1
 # time-varying covariate
-x &lt;- rnorm(N * clsize)
+x &lt;- rnorm(sample_size * cluster_size)
 # number of ordinal response categories
-ncategories &lt;- 5
+categories_no &lt;- 5
 # correlation matrix for the NORTA method
-cor.matrix &lt;- diag(1, (ncategories - 1) * clsize) + kronecker(toeplitz(c(0, 
-    rep(0.24, ncategories - 2))), matrix(1, clsize, clsize))
+latent_correlation_matrix &lt;- diag(1, (categories_no - 1) * cluster_size) + kronecker(toeplitz(c(0, 
+    rep(0.24, categories_no - 2))), matrix(1, cluster_size, cluster_size))
 # simulation of ordinal responses
-CorOrdRes &lt;- rmult.crm(clsize = clsize, intercepts = intercepts, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix, link = &quot;probit&quot;)
+simulated_ordinal_dataset &lt;- rmult.crm(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x, cor.matrix = latent_correlation_matrix, 
+    link = &quot;probit&quot;)
 # first six clusters with ordinal responses
-head(CorOrdRes$Ysim)
+head(simulated_ordinal_dataset$Ysim)
 #&gt;     t=1 t=2 t=3 t=4
 #&gt; i=1   2   1   3   1
 #&gt; i=2   1   4   1   1
@@ -538,20 +600,87 @@ head(CorOrdRes$Ysim)
 #&gt; i=5   2   1   1   1
 #&gt; i=6   3   3   4   5</code></pre>
 </div>
+<div id="marginal-adjacent-category-logit-model" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Marginal adjacent-category logit model</h3>
+<p>The function <code>rmult.acl</code> simulates clustered ordinal responses under the marginal adjacent-category logit model
+<span class="math display" id="eq:MACL">\[\begin{equation}
+\log\left[\frac{\Pr(Y_{it}=j |\mathbf {x}_{it})}{\Pr(Y_{it}=j+1 |\mathbf {x}_{it})}\right]=\beta_{tj0} +\boldsymbol {\beta}^{&#39;}_t \mathbf {x}_{it}
+\tag{3.4}
+\end{equation}\]</span>
+where <span class="math inline">\(\beta_{tj0}\)</span> is the <span class="math inline">\(j\)</span>-th category-specific intercept at measurement occasion <span class="math inline">\(t\)</span>, <span class="math inline">\(\boldsymbol \beta_t\)</span> is the regression parameter vector associated with the covariates at measurement occasion <span class="math inline">\(t\)</span>.</p>
+<p>Generation of clustered ordinal responses relies upon utilizing the connection between baseline-category logit models and adjacent-category logit models. In particular, the threshold
+<span class="math display">\[Y_{it}=j \Leftrightarrow U^{O3}_{itj}=\max \{U^{O3}_{it1},\ldots,U^{O3}_{itJ}\}\]</span>
+generates clustered nominal responses that satisfy the marginal adjacent-category logit model <a href="#eq:MACL">(3.4)</a>, where
+<span class="math display">\[U^{O3}_{itj}=\sum_{k=j}^J\beta_{tk0}+(J-j)\boldsymbol{\beta}_{t}^{\prime} \mathbf {x}_{it}+e^{O3}_{itj},\]</span>
+and where the random variables <span class="math inline">\(\{e^{O3}_{itj}:i=1,\ldots,N \text{,  } t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span> satisfy the following conditions:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(e^{O3}_{itj}\)</span> follows the standard extreme value distribution for all <span class="math inline">\(i\)</span>, <span class="math inline">\(t\)</span> and <span class="math inline">\(j\)</span>.</li>
+<li><span class="math inline">\(e^{O3}_{i_1t_1j_1}\)</span> and <span class="math inline">\(e^{O3}_{i_2t_2j_2}\)</span> are independent random variables provided that <span class="math inline">\(i_1 \neq i_2\)</span>.</li>
+<li><span class="math inline">\(e^{O3}_{itj_1}\)</span> and <span class="math inline">\(e^{O3}_{itj_2}\)</span> are independent random variables provided that <span class="math inline">\(j_1\neq j_2\)</span>.</li>
+</ol>
+<p>For each subject <span class="math inline">\(i\)</span>, the association structure among the clustered ordinal responses <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span> depends on the joint distribution and correlation matrix of <span class="math inline">\(\{e^{O3}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span>. If the random variables <span class="math inline">\(\{e^{O3}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}\)</span> are independent then so are <span class="math inline">\(\{Y_{it}:t=1,\ldots,T\}\)</span>.
+</p>
+
+<div class="example">
+<span id="exm:Example4" class="example"><strong>Example 3.4  (Simulation of clustered ordinal responses conditional on a marginal adjacent-category logit model using the NORTA method)  </strong></span>Suppose the aim is to simulate ordinal responses from the marginal adjacent-category logit model
+<span class="math display">\[\begin{equation*}
+\log \left[\frac{\Pr(Y_{it}=j |\mathbf {x}_{it})}{\Pr(Y_{it}=j+1 |\mathbf {x}_{it})}\right]=\beta_{j0}+ \beta_{1} {x}_{i1}+ \beta_{2} {x}_{it2} \end{equation*}\]</span>
+where <span class="math inline">\(N=500\)</span>, <span class="math inline">\(T=3\)</span>, <span class="math inline">\((\beta_{10},\beta_{20},\beta_{30})=(3, 2, 1)\)</span>, <span class="math inline">\((\beta_{1},\beta_{2})=(1, 1)\)</span> and <span class="math inline">\(\mathbf {x}_{it}=(x_{i1},x_{it2})^{\prime}\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>, with <span class="math inline">\(x_{i1}\overset{iid}{\sim} N(0,1)\)</span> and <span class="math inline">\(x_{it2}\overset{iid}{\sim} N(0,1)\)</span>. For the dependence structure, suppose that the correlation matrix <span class="math inline">\(\mathbf{R}\)</span> in the NORTA method has elements
+<span class="math display">\[
+\mathbf{R}_{t_1j_1,t_2j_2}=\begin{cases}
+1 &amp; \text{if } t_1=t_2 \text{ and } j_1=j_2\\
+0.95 &amp; \text{if } t_1 \neq t_2 \text{ and } j_1=j_2\\
+0 &amp; \text{otherwise }\\
+\end{cases}
+\]</span>
+for all <span class="math inline">\(i=1,\ldots,500\)</span>.
+</div>
+
+<pre class="r"><code># intercepts
+beta_intercepts &lt;- c(3, 2, 1)
+# parameter vector
+beta_coefficients &lt;- c(1, 1)
+# sample size
+sample_size &lt;- 500
+# cluster size
+cluster_size &lt;- 3
+set.seed(321)
+# time-stationary covariate x_{i1}
+x1 &lt;- rep(rnorm(sample_size), each = cluster_size)
+# time-varying covariate x_{it2}
+x2 &lt;- rnorm(sample_size * cluster_size)
+# create covariates dataframe
+xdata &lt;- data.frame(x1, x2)
+# correlation matrix for the NORTA method
+equicorrelation_matrix &lt;- toeplitz(c(1, rep(0.95, cluster_size - 1)))
+identity_matrix &lt;- diag(4)
+latent_correlation_matrix &lt;- kronecker(equicorrelation_matrix, identity_matrix)
+# simulation of clustered ordinal responses
+simulated_ordinal_dataset &lt;- rmult.acl(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x1 + x2, xdata = xdata, cor.matrix = latent_correlation_matrix)
+suppressPackageStartupMessages(library(&quot;multgee&quot;))
+# fitting a GEE model
+ordinal_gee_model &lt;- ordLORgee(y ~ x1 + x2, data = simulated_ordinal_dataset$simdata, 
+    id = id, repeated = time, LORstr = &quot;time.exch&quot;, link = &quot;acl&quot;)
+# checking regression coefficients
+round(coef(ordinal_gee_model), 2)
+#&gt; beta10 beta20 beta30     x1     x2 
+#&gt;   2.95   1.97   1.67   1.14   1.00</code></pre>
+</div>
 </div>
 <div id="correlated-binary-responses" class="section level2">
 <h2><span class="header-section-number">3.3</span> Correlated binary responses</h2>
 <p>The function <code>rbin</code> simulates binary responses under the marginal model specification
 <span class="math display" id="eq:MB">\[\begin{equation}
 \Pr(Y_{it}=1 |\mathbf {x}_{it})=F(\beta_{t0} +\boldsymbol {\beta}^{\prime}_{t} \mathbf {x}_{it})
-\tag{3.4}
+\tag{3.5}
 \end{equation}\]</span>
 where <span class="math inline">\(\beta_{t0}\)</span> is the intercept at measurement occasion <span class="math inline">\(t\)</span>, <span class="math inline">\(\boldsymbol \beta_t\)</span> is the regression parameter vector associated with the covariates at measurement occasion <span class="math inline">\(t\)</span> and <span class="math inline">\(F\)</span> is a cdf. The threshold
 <span class="math display">\[Y_{it}=1 \Leftrightarrow U^{B}_{it} \leq \beta_{t0} + 2 \boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it},\]</span>
-generates clustered binary responses that satisfy the marginal model <a href="#eq:MB">(3.4)</a>, where
+generates clustered binary responses that satisfy the marginal model <a href="#eq:MB">(3.5)</a>, where
 <span class="math display" id="eq:TMB">\[\begin{equation}
 U^{B}_{it}=\boldsymbol {\beta}^{\prime}_t \mathbf {x}_{it}+e^{B}_{it},
-\tag{3.5}
+\tag{3.6}
 \end{equation}\]</span>
 and where <span class="math inline">\(\{e^{B}_{it}:i=1,\ldots,N \text{ and } t=1,\ldots,T\}\)</span> are random variables such that:</p>
 <ol style="list-style-type: decimal">
@@ -562,9 +691,9 @@ For each subject <span class="math inline">\(i\)</span>, the association structu
 
 
 <div class="example">
-<span id="exm:BinaryProbit" class="example"><strong>Example 3.4  (Simulation of clustered binary responses conditional on a marginal probit model using NORTA method)  </strong></span>Suppose the goal is to simulate clustered binary responses from the marginal probit model
+<span id="exm:BinaryProbit" class="example"><strong>Example 3.5  (Simulation of clustered binary responses conditional on a marginal probit model using NORTA method)  </strong></span>Suppose the goal is to simulate clustered binary responses from the marginal probit model
 <span class="math display">\[\Pr(Y_{it}=1 |\mathbf{x}_{it})=\Phi(0.2x_i)\]</span>
-where <span class="math inline">\(N=100\)</span>, <span class="math inline">\(T=4\)</span> and <span class="math inline">\(\mathbf{x}_{it}=x_i\overset{iid}{\sim} N(0,1)\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. For the association structure, assume that the random variables <span class="math inline">\(\mathbf{e}_i^{B}=(e^{B}_{i1},e^{B}_{i2},e^{B}_{i3},e^{B}_{i4})^{\prime}\)</span> in <a href="#eq:TMB">(3.5)</a> are iid random vectors from the tetra-variate normal distribution with mean vector the zero vector and covariance matrix the correlation matrix <span class="math inline">\(\mathbf{R}\)</span> given by
+where <span class="math inline">\(N=100\)</span>, <span class="math inline">\(T=4\)</span> and <span class="math inline">\(\mathbf{x}_{it}=x_i\overset{iid}{\sim} N(0,1)\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. For the association structure, assume that the random variables <span class="math inline">\(\mathbf{e}_i^{B}=(e^{B}_{i1},e^{B}_{i2},e^{B}_{i3},e^{B}_{i4})^{\prime}\)</span> in <a href="#eq:TMB">(3.6)</a> are iid random vectors from the tetra-variate normal distribution with mean vector the zero vector and covariance matrix the correlation matrix <span class="math inline">\(\mathbf{R}\)</span> given by
 <span class="math display" id="eq:CMB">\[\begin{equation}
 \mathbf{R}=\left( {\begin{array}{*{20}c}
    1.00 &amp; 0.90 &amp; 0.90 &amp; 0.90  \\
@@ -572,47 +701,48 @@ where <span class="math inline">\(N=100\)</span>, <span class="math inline">\(T=
    0.90 &amp; 0.90 &amp; 1.00 &amp; 0.90 \\
    0.90 &amp; 0.90 &amp; 0.90 &amp; 1.00
  \end{array} } \right).
- \tag{3.6}
+ \tag{3.7}
  \end{equation}\]</span>
-This association configuration defines an exchangeable correlation matrix for the clustered binary responses, i.e. <span class="math inline">\(\text{corr}(Y_{it_1},Y_{it_2})=\rho_i\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. The strength of the correlation (<span class="math inline">\(\rho_i\)</span>) is decreasing as the absolute value of the time-stationary covariate <span class="math inline">\(x_i\)</span> increases. For example, <span class="math inline">\(\rho_i=0.7128\)</span> when <span class="math inline">\(x_{i}=0\)</span> and <span class="math inline">\(\rho_i=0.7\)</span> when <span class="math inline">\(x_i=3\)</span> or <span class="math inline">\(x_i=-3\)</span>. Therefore, a strong exchangeable correlation pattern for each subject that does not differ much across subjects is implied with this configuration.
+This association configuration defines an exchangeable correlation matrix for the clustered binary responses, i.e. <span class="math inline">\(\text{corr}(Y_{it_1},Y_{it_2})=\rho_i\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. The strength of the correlation (<span class="math inline">\(\rho_i\)</span>) is decreasing as the absolute value of the time-stationary covariate <span class="math inline">\(x_i\)</span> increases. For example, <span class="math inline">\(\rho_i=0.7128\)</span> when <span class="math inline">\(x_{i}=0\)</span> and <span class="math inline">\(\rho_i=0.7\)</span> when <span class="math inline">\(x_i=3\)</span> or <span class="math inline">\(x_i=-3\)</span>. Therefore, a strong exchangeable correlation pattern for each subject that does not differ much across subjects is implied with this configuration.
 </div>
 
 <pre class="r"><code>set.seed(123)
 # sample size
-N &lt;- 100
+sample_size &lt;- 100
 # cluster size
-clsize &lt;- 4
+cluster_size &lt;- 4
 # intercept
-intercepts &lt;- 0
+beta_intercepts &lt;- 0
 # regression parameter associated with the covariate
-betas &lt;- 0.2
+beta_coefficients &lt;- 0.2
 # correlation matrix for the NORTA method
-cor.matrix &lt;- toeplitz(c(1, 0.9, 0.9, 0.9))
+latent_correlation_matrix &lt;- toeplitz(c(1, 0.9, 0.9, 0.9))
 # time-stationary covariate
-x &lt;- rep(rnorm(N), each = clsize)
+x &lt;- rep(rnorm(sample_size), each = cluster_size)
 # simulation of clustered binary responses
-CorBinRes &lt;- rbin(clsize = clsize, intercepts = intercepts, betas = betas, xformula = ~x, 
-    cor.matrix = cor.matrix, link = &quot;probit&quot;)
+simulated_binary_dataset &lt;- rbin(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x, cor.matrix = latent_correlation_matrix, 
+    link = &quot;probit&quot;)
 library(gee)
 # fitting a GEE model
-binGEEmod &lt;- gee(y ~ x, family = binomial(&quot;probit&quot;), id = id, data = CorBinRes$simdata)
+binary_gee_model &lt;- gee(y ~ x, family = binomial(&quot;probit&quot;), id = id, data = simulated_binary_dataset$simdata)
 #&gt; Beginning Cgee S-function, @(#) geeformula.q 4.13 98/01/27
 #&gt; running glm to get initial regression estimate
 #&gt; (Intercept)           x 
 #&gt;   0.1315121   0.2826005
 # checking the estimated coefficients
-summary(binGEEmod)$coefficients
+summary(binary_gee_model)$coefficients
 #&gt;              Estimate Naive S.E.  Naive z Robust S.E. Robust z
 #&gt; (Intercept) 0.1315121 0.06399465 2.055048   0.1106696 1.188331
 #&gt; x           0.2826006 0.07191931 3.929412   0.1270285 2.224703</code></pre>
 
 
 <div class="example">
-<span id="exm:BinaryLogit" class="example"><strong>Example 3.5  (Simulation of clustered binary responses under a conditional marginal logit model without utilizing the NORTA method)  </strong></span>Consider now simulation of correlated binary responses from the marginal logit model
+<span id="exm:BinaryLogit" class="example"><strong>Example 3.6  (Simulation of clustered binary responses under a conditional marginal logit model without utilizing the NORTA method)  </strong></span>Consider now simulation of correlated binary responses from the marginal logit model
 <span class="math display">\[\begin{equation*}
 \Pr(Y_{it}=1 |\mathbf{x}_{it})=F(0.2x_i)
 \end{equation*}\]</span>
-where <span class="math inline">\(F\)</span> is the cdf of the standard logistic distribution (mean <span class="math inline">\(=0\)</span> and variance <span class="math inline">\(=\pi^2/3\)</span>), <span class="math inline">\(N=100\)</span>, <span class="math inline">\(T=4\)</span> and <span class="math inline">\(\mathbf{x}_{it}=x_i\overset{iid}{\sim} N(0,1)\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. This is similar to the marginal model configuration in Example <a href="#exm:BinaryProbit">3.4</a> except from the link function. For the dependence structure, assume that the correlation matrix of <span class="math inline">\(\mathbf{e}_i^{B}=(e^{B}_{i1},e^{B}_{i2},e^{B}_{i3},e^{B}_{i4})^{\prime}\)</span> in <a href="#eq:TMB">(3.5)</a> is equal to the correlation matrix <span class="math inline">\(\mathbf{R}\)</span> defined in <a href="#eq:CMB">(3.6)</a>. To simulate <span class="math inline">\(\mathbf{e}_i^{B}\)</span> without utilizing the NORTA method, one can employ the tetra-variate extreme value distribution <span class="citation">(Gumbel <a href="#ref-Gumbel1958">1958</a>)</span>. In particular, this is accomplished by setting <span class="math inline">\(\mathbf{e}_i^{B}=\mathbf{U}_i-\mathbf{V}_i\)</span> for all <span class="math inline">\(i\)</span>, where <span class="math inline">\(\mathbf{U}_i\)</span> and <span class="math inline">\(\mathbf{V}_i\)</span> are independent random vectors from the tetra-variate extreme value distribution with dependence parameter equal to <span class="math inline">\(0.9\)</span>, that is
+where <span class="math inline">\(F\)</span> is the cdf of the standard logistic distribution (mean <span class="math inline">\(=0\)</span> and variance <span class="math inline">\(=\pi^2/3\)</span>), <span class="math inline">\(N=100\)</span>, <span class="math inline">\(T=4\)</span> and <span class="math inline">\(\mathbf{x}_{it}=x_i\overset{iid}{\sim} N(0,1)\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t\)</span>. This is similar to the marginal model configuration in Example <a href="#exm:BinaryProbit">3.5</a> except from the link function. For the dependence structure, assume that the correlation matrix of <span class="math inline">\(\mathbf{e}_i^{B}=(e^{B}_{i1},e^{B}_{i2},e^{B}_{i3},e^{B}_{i4})^{\prime}\)</span> in <a href="#eq:TMB">(3.6)</a> is equal to the correlation matrix <span class="math inline">\(\mathbf{R}\)</span> defined in <a href="#eq:CMB">(3.7)</a>. To simulate <span class="math inline">\(\mathbf{e}_i^{B}\)</span> without utilizing the NORTA method, one can employ the tetra-variate extreme value distribution <span class="citation">(Gumbel <a href="#ref-Gumbel1958" role="doc-biblioref">1958</a>)</span>. In particular, this is accomplished by setting <span class="math inline">\(\mathbf{e}_i^{B}=\mathbf{U}_i-\mathbf{V}_i\)</span> for all <span class="math inline">\(i\)</span>, where <span class="math inline">\(\mathbf{U}_i\)</span> and <span class="math inline">\(\mathbf{V}_i\)</span> are independent random vectors from the tetra-variate extreme value distribution with dependence parameter equal to <span class="math inline">\(0.9\)</span>, that is
 <span class="math display">\[\Pr\left(U_{i1}\leq u_{i1},U_{i2}\leq u_{i2},U_{i3}\leq u_{i3},U_{i4}\leq u_{i4}\right)=\exp\left\{-\left[\sum_{t=1}^4 \exp{\left(-\frac{u_{it}}{0.9}\right)}\right]^{0.9}\right\}\]</span>
 and
 <span class="math display">\[\Pr\left(V_{i1}\leq v_{i1},V_{i2}\leq v_{i2},V_{i3}\leq v_{i3},V_{i4}\leq v_{i4}\right)=\exp\left\{-\left[\sum_{t=1}^4 \exp{\left(-\frac{v_{it}}{0.9}\right)}\right]^{0.9}\right\}.\]</span>
@@ -623,26 +753,28 @@ It follows that <span class="math inline">\(e_{it}^{B}\sim F\)</span> for all <s
 # simulation of epsilon variables
 library(evd)
 #&gt; 
-#&gt; Attaching package: 'evd'
-#&gt; The following objects are masked from 'package:VGAM':
+#&gt; Attaching package: &#39;evd&#39;
+#&gt; The following objects are masked from &#39;package:VGAM&#39;:
 #&gt; 
 #&gt;     dfrechet, dgev, dgpd, dgumbel, pfrechet, pgev, pgpd, pgumbel,
 #&gt;     qfrechet, qgev, qgpd, qgumbel, rfrechet, rgev, rgpd, rgumbel,
 #&gt;     venice
-rlatent1 &lt;- rmvevd(N, dep = sqrt(1 - 0.9), model = &quot;log&quot;, d = clsize)
-rlatent2 &lt;- rmvevd(N, dep = sqrt(1 - 0.9), model = &quot;log&quot;, d = clsize)
-rlatent &lt;- rlatent1 - rlatent2
+simulated_latent_variables1 &lt;- rmvevd(sample_size, dep = sqrt(1 - 0.9), model = &quot;log&quot;, 
+    d = cluster_size)
+simulated_latent_variables2 &lt;- rmvevd(sample_size, dep = sqrt(1 - 0.9), model = &quot;log&quot;, 
+    d = cluster_size)
+simulated_latent_variables &lt;- simulated_latent_variables1 - simulated_latent_variables2
 # simulation of clustered binary responses
-CorBinRes &lt;- rbin(clsize = clsize, intercepts = intercepts, betas = betas, xformula = ~x, 
-    rlatent = rlatent)
+simulated_binary_dataset &lt;- rbin(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x, rlatent = simulated_latent_variables)
 # fitting a GEE model
-binGEEmod &lt;- gee(y ~ x, family = binomial(&quot;logit&quot;), id = id, data = CorBinRes$simdata)
+binary_gee_model &lt;- gee(y ~ x, family = binomial(&quot;logit&quot;), id = id, data = simulated_binary_dataset$simdata)
 #&gt; Beginning Cgee S-function, @(#) geeformula.q 4.13 98/01/27
 #&gt; running glm to get initial regression estimate
 #&gt; (Intercept)           x 
 #&gt;  0.04146261  0.09562709
 # checking the estimated coefficients
-summary(binGEEmod)$coefficients
+summary(binary_gee_model)$coefficients
 #&gt;               Estimate Naive S.E.   Naive z Robust S.E.  Robust z
 #&gt; (Intercept) 0.04146261  0.1008516 0.4111249   0.1790511 0.2315686
 #&gt; x           0.09562709  0.1107159 0.8637160   0.1949327 0.4905647</code></pre>
@@ -651,64 +783,65 @@ summary(binGEEmod)$coefficients
 <h2><span class="header-section-number">3.4</span> No marginal model specification</h2>
 <p>To achieve simulation of clustered binary, ordinal and nominal responses under no marginal model specification, perform the following intercepts:</p>
 <ol style="list-style-type: decimal">
-<li><p>Based on the marginal probabilities calculate the intercept of a marginal probit model for binary responses (see Example <a href="#exm:no-covariate">3.6</a>) or the category-specific intercepts of a cumulative probit model <span class="citation">(see third example in Touloumis <a href="#ref-Touloumis2016">2016</a>)</span> or of a baseline-category logit model for multinomial responses (see Example <a href="#exm:Example2NoCovariates">3.7</a>).</p></li>
+<li><p>Based on the marginal probabilities calculate the intercept of a marginal probit model for binary responses (see Example <a href="#exm:no-covariate">3.7</a>) or the category-specific intercepts of a cumulative probit model <span class="citation">(see third example in Touloumis <a href="#ref-Touloumis2016" role="doc-biblioref">2016</a>)</span> or of a baseline-category logit model for multinomial responses (see Example <a href="#exm:Example2NoCovariates">3.8</a>).</p></li>
 <li><p>Create a pseudo-covariate say <code>x</code> of length equal to the number of cluster size (<code>clsize</code>) times the desired number of clusters of simulated responses (say <code>R</code>), that is <code>x = clsize * R</code>. This step is required in order to identify the desired number of clustered responses.</p></li>
-<li><p>Set <code>betas = 0</code> in the core functions <code>rbin</code> (see Example <a href="#exm:no-covariate">3.6</a>) or <code>rmult.clm</code>, or set 0 all values of the <code>beta</code> argument that correspond to the category-specific parameters in the core function <code>rmult.bcl</code> (see Example <a href="#exm:Example2NoCovariates">3.7</a>).</p></li>
+<li><p>Set <code>betas = 0</code> in the core functions <code>rbin</code> (see Example <a href="#exm:no-covariate">3.7</a>) or <code>rmult.clm</code>, or set 0 all values of the <code>beta</code> argument that correspond to the category-specific parameters in the core function <code>rmult.bcl</code> (see Example <a href="#exm:Example2NoCovariates">3.8</a>).</p></li>
 <li><p>set <code>xformula = ~ x</code>.</p></li>
 <li><p>Run the core function to obtain realizations of the simulated clustered responses.</p></li>
 </ol>
-
+<p></p>
 
 <div class="example">
-<span id="exm:no-covariate" class="example"><strong>Example 3.6  (Simulation of clustered binary responses without covariates)  </strong></span>Suppose the goal is to simulate <span class="math inline">\(5000\)</span> clustered binary responses with <span class="math inline">\(\Pr(Y_{t}=1)=0.8\)</span> for all <span class="math inline">\(t=1,\ldots,4\)</span>. For simplicity, assume that the clustered binary responses are independent.
+<span id="exm:no-covariate" class="example"><strong>Example 3.7  (Simulation of clustered binary responses without covariates)  </strong></span>Suppose the goal is to simulate <span class="math inline">\(5000\)</span> clustered binary responses with <span class="math inline">\(\Pr(Y_{t}=1)=0.8\)</span> for all <span class="math inline">\(t=1,\ldots,4\)</span>. For simplicity, assume that the clustered binary responses are independent.
 </div>
 
 <pre class="r"><code>set.seed(123)
 # sample size
-N &lt;- 5000
+sample_size &lt;- 5000
 # cluster size
-clsize &lt;- 4
+cluster_size &lt;- 4
 # intercept
-intercepts &lt;- qnorm(0.8)
+beta_intercepts &lt;- qnorm(0.8)
 # pseudo-covariate
-x &lt;- rep(0, each = clsize * N)
+x &lt;- rep(0, each = cluster_size * sample_size)
 # regression parameter associated with the covariate
-betas &lt;- 0
+beta_coefficients &lt;- 0
 # correlation matrix for the NORTA method
-cor.matrix &lt;- diag(clsize)
+latent_correlation_matrix &lt;- diag(cluster_size)
 # simulation of clustered binary responses
-CorBinRes &lt;- rbin(clsize = clsize, intercepts = intercepts, betas = betas, xformula = ~x, 
-    cor.matrix = cor.matrix, link = &quot;probit&quot;)
+simulated_binary_dataset &lt;- rbin(clsize = cluster_size, intercepts = beta_intercepts, 
+    betas = beta_coefficients, xformula = ~x, cor.matrix = latent_correlation_matrix, 
+    link = &quot;probit&quot;)
 library(gee)
 # simulated marginal probabilities
-colMeans(CorBinRes$Ysim)
+colMeans(simulated_binary_dataset$Ysim)
 #&gt;    t=1    t=2    t=3    t=4 
 #&gt; 0.8024 0.7972 0.7948 0.8088</code></pre>
 
 
 <div class="example">
-<span id="exm:Example2NoCovariates" class="example"><strong>Example 3.7  (Simulation of clustered nominal responses without covariates)  </strong></span>Suppose the aim is to simulate <span class="math inline">\(N=5000\)</span> clustered nominal responses with
+<span id="exm:Example2NoCovariates" class="example"><strong>Example 3.8  (Simulation of clustered nominal responses without covariates)  </strong></span>Suppose the aim is to simulate <span class="math inline">\(N=5000\)</span> clustered nominal responses with
 <span class="math inline">\(\Pr(Y_{t}=1)=0.1\)</span>, <span class="math inline">\(\Pr(Y_{t}=2)=0.2\)</span>, <span class="math inline">\(\Pr(Y_{t}=3)=0.3\)</span> and <span class="math inline">\(\Pr(Y_{t}=4)=0.4\)</span>, for all <span class="math inline">\(i\)</span> and <span class="math inline">\(t=1,\ldots,3\)</span>. For the sake of simplicity, we assume that the clustered responses are independent.
 </div>
 
 <pre class="r"><code># sample size
-N &lt;- 5000
+sample_size &lt;- 5000
 # cluster size
-clsize &lt;- 3
+cluster_size &lt;- 3
 # pseudo-covariate
-x &lt;- rep(0, each = clsize * N)
+x &lt;- rep(0, each = cluster_size * sample_size)
 # parameter vector
 betas &lt;- c(log(0.1/0.4), 0, log(0.2/0.4), 0, log(0.3/0.4), 0, 0, 0)
 # number of nominal response categories
-ncategories &lt;- 4
+categories_no &lt;- 4
 set.seed(1)
 # correlation matrix for the NORTA method
-cor.matrix &lt;- kronecker(toeplitz(c(1, rep(0, clsize - 1))), diag(ncategories))
+latent_correlation_matrix &lt;- kronecker(diag(cluster_size), diag(categories_no))
 # simulation of clustered nominal responses
-CorNorRes &lt;- rmult.bcl(clsize = clsize, ncategories = ncategories, betas = betas, 
-    xformula = ~x, cor.matrix = cor.matrix)
+simulated_nominal_dataset &lt;- rmult.bcl(clsize = cluster_size, ncategories = categories_no, 
+    betas = betas, xformula = ~x, cor.matrix = latent_correlation_matrix)
 # simulated marginal probabilities
-apply(CorNorRes$Ysim, 2, table)/N
+apply(simulated_nominal_dataset$Ysim, 2, table)/sample_size
 #&gt;      t=1    t=2    t=3
 #&gt; 1 0.1000 0.0996 0.1036
 #&gt; 2 0.2034 0.2000 0.2000
@@ -747,7 +880,7 @@ A BibTeX entry for LaTeX users is
 <p>Gumbel, E. J. 1958. <em>Statistics of Extremes</em>. Columbia University Press, New York.</p>
 </div>
 <div id="ref-Touloumis2016">
-<p>Touloumis, A. 2016. “Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package.” <em>The R Journal</em> 8 (2):79–91. <a href="https://journal.r-project.org/archive/2016/RJ-2016-034/index.html" class="uri">https://journal.r-project.org/archive/2016/RJ-2016-034/index.html</a>.</p>
+<p>Touloumis, A. 2016. “Simulating Correlated Binary and Multinomial Responses under Marginal Model Specification: The SimCorMultRes Package.” <em>The R Journal</em> 8 (2): 79–91. <a href="https://journal.r-project.org/archive/2016/RJ-2016-034/index.html">https://journal.r-project.org/archive/2016/RJ-2016-034/index.html</a>.</p>
 </div>
 </div>
 </div>
@@ -769,6 +902,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
