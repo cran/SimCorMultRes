@@ -64,16 +64,18 @@ check_correlation_matrix <- function(correlation_matrix, cluster_size, rfctn,
 }
 
 check_xformula <- function(xformula) {
-  linear_predictor_formula <- as.formula(xformula)
-  if (length(paste0(attr(terms(linear_predictor_formula), "variables"))) == 1) {
+  linear_predictor_formula <- stats::as.formula(xformula)
+  if (length(paste0(attr(stats::terms(linear_predictor_formula),
+                         "variables"))) == 1) {
     stop("No covariates were found in 'formula' ")
-  }
-  if (attr(terms(linear_predictor_formula), "intercept") == 0) {
-    linear_predictor_formula <- update(linear_predictor_formula, ~ . + 1)
+    }
+  if (attr(stats::terms(linear_predictor_formula), "intercept") == 0) {
+    linear_predictor_formula <- stats::update(linear_predictor_formula, ~ . + 1)
   }
   linear_predictor_formula
 }
 
+# nolint start
 check_intercepts <- function(intercepts, cluster_size, rfctn,
                              sample_size = NULL) {
   if (!is.numeric(intercepts)) {
@@ -141,6 +143,7 @@ check_intercepts <- function(intercepts, cluster_size, rfctn,
   }
   intercepts
 }
+# nolint end
 
 check_betas <- function(betas, cluster_size) {
   if (!(is.vector(betas) & !is.list(betas)) & !is.matrix(betas)) {
@@ -163,7 +166,7 @@ check_betas <- function(betas, cluster_size) {
 create_linear_predictor <- function(betas, cluster_size,
                                     linear_predictor_formula, xdata, rfctn,
                                     categories_no = NULL) {
-  xmat <- model.matrix(linear_predictor_formula, data = xdata)
+  xmat <- stats::model.matrix(linear_predictor_formula, data = xdata)
   if (rfctn == "rmult.bcl") {
     xmat <- apply(xmat, 2, function(x) rep(x, each = categories_no))
     if (length(betas) != (cluster_size * categories_no * ncol(xmat))) {
@@ -198,13 +201,14 @@ create_distribution <- function(link) {
   if (length(link) != 1) {
     stop("The length of 'link' must be one")
   }
-  links <- c("probit", "logit", "cloglog", "cauchit")
+  links <- c("probit", "logit", "cloglog", "cauchit", "identity")
   if (!is.element(link, links)) {
-    stop("'link' must be 'probit','logit','cloglog' and/or 'cauchit'")
+    stop("'link' must be 'probit', 'logit', 'cloglog', 'cauchit' and/or
+         'identity'")
   }
   distr <- switch(
     link, probit = "qnorm", logit = "qlogis", cloglog = "qgumbel",
-    cauchit = "qcauchy"
+    cauchit = "qcauchy", identity = "qunif"
   )
   distr
 }
@@ -270,10 +274,11 @@ create_output <- function(simulated_responses, sample_size, cluster_size,
         sep = ""
       )
     }
-  sim_model_frame <- model.frame(
+  sim_model_frame <- stats::model.frame(
     formula = linear_predictor_formula, data = xdata
   )
-  simdata <- data.frame(y, sim_model_frame, id, time)
+  simdata <- data.frame(y, get_all_vars(formula = linear_predictor_formula,
+                                        data = xdata), id, time)
   list(
     Ysim = simulated_responses, simdata = simdata,
     rlatent = simulated_latent_variables

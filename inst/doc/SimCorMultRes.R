@@ -1,11 +1,11 @@
-## ---- echo = FALSE-------------------------------------------------------
+## ---- echo = FALSE------------------------------------------------------------
 knitr::opts_chunk$set(
   tidy = TRUE,
   collapse = TRUE,
   comment = "#>"
   )
 
-## ---- tidy=TRUE----------------------------------------------------------
+## ---- tidy=TRUE---------------------------------------------------------------
 # parameter vector
 betas <-  c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
 # sample size
@@ -22,7 +22,7 @@ x2 <- rnorm(sample_size * cluster_size)
 # create covariates dataframe 
 xdata <- data.frame(x1, x2) 
 set.seed(321)
-library(SimCorMultRes)
+library("SimCorMultRes")
 # latent correlation matrix for the NORTA method
 equicorrelation_matrix <- toeplitz(c(1, rep(0.95,cluster_size - 1)))
 identity_matrix <- diag(categories_no)
@@ -36,12 +36,13 @@ simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
 suppressPackageStartupMessages(library("multgee"))
 # fitting a GEE model
 nominal_gee_model <- nomLORgee(y ~ x1 + x2,
-                               data = simulated_nominal_dataset$simdata, id = id,
-                               repeated = time, LORstr="time.exch")
+                               data = simulated_nominal_dataset$simdata,
+                               id = id, repeated = time,
+                               LORstr = "time.exch")
 # checking regression coefficients
 round(coef(nominal_gee_model), 2)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(12345)
 # sample size
 sample_size <- 500
@@ -65,7 +66,7 @@ simulated_ordinal_dataset <- rmult.clm(clsize = cluster_size,
 # first eight rows of the simulated dataframe
 head(simulated_ordinal_dataset$simdata, n = 8)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(1)
 # sample size
 sample_size <- 500
@@ -81,7 +82,8 @@ x <- rnorm(sample_size * cluster_size)
 categories_no <- 5
 # correlation matrix for the NORTA method
 latent_correlation_matrix <- diag(1, (categories_no - 1) * cluster_size) +
-  kronecker(toeplitz(c(0, rep(0.24, categories_no - 2))), matrix(1, cluster_size, cluster_size))
+  kronecker(toeplitz(c(0, rep(0.24, categories_no - 2))),
+            matrix(1, cluster_size, cluster_size))
 # simulation of ordinal responses
 simulated_ordinal_dataset <- rmult.crm(clsize = cluster_size,
                                        intercepts = beta_intercepts,
@@ -92,7 +94,7 @@ simulated_ordinal_dataset <- rmult.crm(clsize = cluster_size,
 # first six clusters with ordinal responses
 head(simulated_ordinal_dataset$Ysim)
 
-## ---- tidy=TRUE----------------------------------------------------------
+## ---- tidy=TRUE---------------------------------------------------------------
 # intercepts
 beta_intercepts <- c(3, 2, 1)
 # parameter vector
@@ -127,7 +129,7 @@ ordinal_gee_model <- ordLORgee(y ~ x1 + x2,
 # checking regression coefficients
 round(coef(ordinal_gee_model), 2)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(123)
 # sample size
 sample_size <- 100
@@ -147,14 +149,14 @@ simulated_binary_dataset <- rbin(clsize = cluster_size,
                                  betas = beta_coefficients, xformula = ~ x,
                                  cor.matrix = latent_correlation_matrix,
                                  link = "probit")
-library(gee)
+library("gee")
 # fitting a GEE model
 binary_gee_model <- gee(y ~ x, family = binomial("probit"), id = id,
                         data = simulated_binary_dataset$simdata)
 # checking the estimated coefficients
 summary(binary_gee_model)$coefficients
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(8)
 # simulation of epsilon variables
 library(evd)
@@ -175,7 +177,7 @@ binary_gee_model <- gee(y ~ x, family = binomial("logit"), id = id,
 # checking the estimated coefficients
 summary(binary_gee_model)$coefficients
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(123)
 # sample size
 sample_size <- 5000
@@ -195,11 +197,10 @@ simulated_binary_dataset <- rbin(clsize = cluster_size,
                                  betas = beta_coefficients, xformula = ~x,
                                  cor.matrix = latent_correlation_matrix,
                                  link = "probit")
-library(gee)
 # simulated marginal probabilities
 colMeans(simulated_binary_dataset$Ysim)
 
-## ---- tidy=TRUE----------------------------------------------------------
+## ---- tidy=TRUE---------------------------------------------------------------
 # sample size
 sample_size <- 5000
 # cluster size
@@ -221,6 +222,6 @@ simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
 # simulated marginal probabilities
 apply(simulated_nominal_dataset$Ysim, 2, table) / sample_size
 
-## ---- comment=""---------------------------------------------------------
+## ---- comment=""--------------------------------------------------------------
 citation("SimCorMultRes")
 
