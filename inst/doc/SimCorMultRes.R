@@ -1,11 +1,11 @@
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 knitr::opts_chunk$set(
   tidy = TRUE,
   collapse = TRUE,
   comment = "#>"
   )
 
-## ---- tidy=TRUE---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # parameter vector
 betas <-  c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
 # sample size
@@ -94,7 +94,7 @@ simulated_ordinal_dataset <- rmult.crm(clsize = cluster_size,
 # first six clusters with ordinal responses
 head(simulated_ordinal_dataset$Ysim)
 
-## ---- tidy=TRUE---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # intercepts
 beta_intercepts <- c(3, 2, 1)
 # parameter vector
@@ -159,7 +159,7 @@ summary(binary_gee_model)$coefficients
 ## -----------------------------------------------------------------------------
 set.seed(8)
 # simulation of epsilon variables
-library(evd)
+library("evd")
 simulated_latent_variables1 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
                                       model = "log", d = cluster_size)
 simulated_latent_variables2 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
@@ -200,7 +200,7 @@ simulated_binary_dataset <- rbin(clsize = cluster_size,
 # simulated marginal probabilities
 colMeans(simulated_binary_dataset$Ysim)
 
-## ---- tidy=TRUE---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # sample size
 sample_size <- 5000
 # cluster size
@@ -222,6 +222,19 @@ simulated_nominal_dataset <- rmult.bcl(clsize = cluster_size,
 # simulated marginal probabilities
 apply(simulated_nominal_dataset$Ysim, 2, table) / sample_size
 
-## ---- comment=""--------------------------------------------------------------
+## ----echo = FALSE, fig.cap= "Difference between the correlation parameters of the bivariate normal distribution and of the latent variables for three different marginal distributions."----
+plot(rho - normal ~ rho, data = simulation, type = "l", col = "blue",
+    ylim = c(0, 0.016),
+    ylab = expression(rho - hat(rho)),
+    xlab = expression(rho))
+points(rho - logistic ~ rho, data = simulation, type = "l", col = "red",
+       lty = 2)
+points(rho - gumbel ~ rho, data = simulation, type = "l", col = "grey",
+       lty = 3)
+legend("topright", legend = c("Normal", "Logistic", "Gumbel"),
+      col = c("blue", "red", "grey"), lwd = 1, lty = c(1, 2, 3))
+title(main = paste("Difference between true and simulated correlation"))
+
+## ----comment=""---------------------------------------------------------------
 citation("SimCorMultRes")
 

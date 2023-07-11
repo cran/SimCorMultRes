@@ -1,15 +1,30 @@
 \name{NEWS}
 \title{NEWS file for the \pkg{SimCorMultRes} package}
 
-\section{Changes in Version 1.8.0 (2021-06-10)}{
+\section{Changes in Version 1.9.0 (2023-07-10)}{
+  \subsection{MINOR CHANGES}{
   \itemize{
-    \item{Corrected naming of variables in formula.}
+    \item{Added R journal paper as vignette.}
+    \item{Improved README.}
+    \item{Improved vignette.}
+    \item{Reinstated code coverage using \pkg{covr}.}
+    \item{Updated CITATION style.}
+    \item{Updated GitHub Actions.}
+    }
+    }
+    }
+
+\section{Changes in Version 1.8.0 (2021-06-10)}{
+  \subsection{MINOR CHANGES}{
+  \itemize{
     \item{Added \code{identity} link in \code{rbin}.}
     \item{Added \pkg{rmarkdown} dependency.}
+    \item{Corrected naming of variables in formula.}
     \item{Removed \pkg{markdown} dependency.}
-    \item{Migrating from travis-ci to github actions.}
     \item{Created NEWS.Rd.}
     \item{Fixed ORCID in DESCRIPTION.}
+    \item{Migrating from Travis-CI to GitHub Actions.}
+    }
     }
     }
 

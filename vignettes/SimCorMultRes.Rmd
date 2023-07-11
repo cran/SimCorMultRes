@@ -15,7 +15,7 @@ biblio-style: "apalike"
 link-citations: true
 ---
 
-```{r, echo = FALSE}
+```{r echo = FALSE}
 knitr::opts_chunk$set(
   tidy = TRUE,
   collapse = TRUE,
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction 
-The R package `SimCorMultRes` is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. This vignette briefly describes the simulation methods proposed by @Touloumis2016 and illustrates the use of the core functions of `SimCorMultRes`. A more detailed description of `SimCorMultRes` can be found in @Touloumis2016. 
+The R package `SimCorMultRes` is suitable for simulation of correlated binary responses (exactly two response categories) and of correlated nominal or ordinal multinomial responses (three or more response categories) conditional on a regression model specification for the marginal probabilities of the response categories. A more detailed description of `SimCorMultRes` can be found in @Touloumis2016. This vignette briefly describes the simulation methods proposed by @Touloumis2016, introduces how to simulate ordinal responses under a marginal adjacent-category logit model and illustrates the use of the core functions of `SimCorMultRes`. 
 
 # Areas of Applications
 This package was created to facilitate the task of carrying out simulation studies and evaluating the performance of statistical methods for estimating the regression parameters in a marginal model with clustered binary and multinomial responses. Examples of such statistical methods include maximum likelihood methods, copula approaches, quasi-least squares approaches, generalized quasi-likelihood methods and generalized estimating equations (GEE) approaches among others [see references in @Touloumis2016]. 
@@ -51,7 +51,7 @@ and where the random variables $\{e^{NO}_{itj}:i=1,\ldots,N \text{,  } t=1,\ldot
 1. $e^{NO}_{itj_1}$ and $e^{NO}_{itj_2}$ are independent random variables provided that $j_1\neq j_2$.
 
 For each subject $i$, the association structure among the clustered nominal responses $\{Y_{it}:t=1,\ldots,T\}$ depends on the joint distribution and correlation matrix of $\{e^{NO}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}$. If the random variables $\{e^{NO}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}$ are independent then so are $\{Y_{it}:t=1,\ldots,T\}$.
-\newline{}
+
 
 ```{example, Example1, name="Simulation of clustered nominal responses using the NORTA method"}
 Suppose the aim is to simulate nominal responses from the marginal baseline-category logit model
@@ -68,7 +68,7 @@ where $N=500$, $T=3$, $(\beta_{10},\beta_{11},\beta_{12},\beta_{20},\beta_{21},\
 for all $i=1,\ldots,500$.
 ```
 
-```{r, tidy=TRUE}
+```{r}
 # parameter vector
 betas <-  c(1, 3, 2, 1.25, 3.25, 1.75, 0.75, 2.75, 2.25, 0, 0, 0)
 # sample size
@@ -126,7 +126,8 @@ and where $\{e^{O1}_{it}:i=1,\ldots,N \text{ and } t=1,\ldots,T\}$ are random va
 1. $e^{O1}_{i_1t_1}$ and $e^{O1}_{i_2t_2}$ are independent random variables provided that $i_1 \neq i_2$. 
 
 For each subject $i$, the association structure among the clustered ordinal responses $\{Y_{it}:t=1,\ldots,T\}$ depends on the pairwise bivariate distributions and correlation matrix of $\{e^{O1}_{it}:t=1,\ldots,T\}$. If the random variables $\{e^{O1}_{it}:t=1,\ldots,T\}$ are independent then so are $\{Y_{it}:t=1,\ldots,T\}$.
-\newline{} 
+
+
 ```{example, name="Simulation of clustered ordinal responses conditional on a marginal cumulative probit model with time-varying regression parameters"}
 Suppose the goal is to simulate correlated ordinal responses from the marginal cumulative probit model
 \begin{equation*}
@@ -183,7 +184,8 @@ and where $\{e^{O2}_{itj}:i=1,\ldots,N \text{ , } t=1,\ldots,T \text{ and } j=1,
 1. $e^{O2}_{itj_1}$ and $e^{O2}_{itj_2}$ are independent random variables provided that $j_1\neq j_2$.
  
 For each subject $i$, the association structure among the clustered ordinal responses $\{Y_{it}:t=1,\ldots,T\}$ depends on the joint distribution and correlation matrix of $\{e^{O2}_{itj}:j=1,\ldots,J \text{ and } t=1,\ldots,T\}$. If the random variables $\{e^{O2}_{itj}:j=1,\ldots,J \text{ and } t=1,\ldots,T\}$ are independent then so are $\{Y_{it}:t=1,\ldots,T\}$. 
-\newline{}
+
+
 ```{example,name="Simulation of clustered ordinal responses conditional on a marginal continuation-ratio probit model"}
 Suppose simulation of clustered ordinal responses under the marginal continuation-ratio probit model
 \begin{equation*}
@@ -246,7 +248,6 @@ and where the random variables $\{e^{O3}_{itj}:i=1,\ldots,N \text{,  } t=1,\ldot
 1. $e^{O3}_{itj_1}$ and $e^{O3}_{itj_2}$ are independent random variables provided that $j_1\neq j_2$.
 
 For each subject $i$, the association structure among the clustered ordinal responses $\{Y_{it}:t=1,\ldots,T\}$ depends on the joint distribution and correlation matrix of $\{e^{O3}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}$. If the random variables $\{e^{O3}_{itj}:t=1,\ldots,T \text{ and } j=1,\ldots,J\}$ are independent then so are $\{Y_{it}:t=1,\ldots,T\}$.
-\newline{} 
 
 ```{example, Example4, name="Simulation of clustered ordinal responses conditional on a marginal adjacent-category logit model using the NORTA method"}
 Suppose the aim is to simulate ordinal responses from the marginal adjacent-category logit model
@@ -263,7 +264,7 @@ where $N=500$, $T=3$, $(\beta_{10},\beta_{20},\beta_{30})=(3, 2, 1)$, $(\beta_{1
 for all $i=1,\ldots,500$.
 ```
 
-```{r, tidy=TRUE}
+```{r}
 # intercepts
 beta_intercepts <- c(3, 2, 1)
 # parameter vector
@@ -318,7 +319,8 @@ and where $\{e^{B}_{it}:i=1,\ldots,N \text{ and } t=1,\ldots,T\}$ are random var
 1. $e^{B}_{i_1t_1}$ and $e^{B}_{i_2t_2}$ are independent random variables provided that $i_1 \neq i_2$.
 
 For each subject $i$, the association structure among the clustered binary responses $\{Y_{it}:t=1,\ldots,T\}$ depends on the pairwise bivariate distributions and correlation matrix of $\{e^{B}_{it}:t=1,\ldots,T\}$. If the random variables $\{e^{B}_{it}:t=1,\ldots,T\}$ are independent then so are $\{Y_{it}:t=1,\ldots,T\}$.
-\newline{}
+
+
 ```{example, label=BinaryProbit, name="Simulation of clustered binary responses conditional on a marginal probit model using NORTA method"}
 Suppose the goal is to simulate clustered binary responses from the marginal probit model 
 $$\Pr(Y_{it}=1 |\mathbf{x}_{it})=\Phi(0.2x_i)$$
@@ -362,7 +364,8 @@ binary_gee_model <- gee(y ~ x, family = binomial("probit"), id = id,
 # checking the estimated coefficients
 summary(binary_gee_model)$coefficients
 ```
-\textbf{ }
+
+
 ```{example, label=BinaryLogit, name="Simulation of clustered binary responses under a conditional marginal logit model without utilizing the NORTA method"} 
 Consider now simulation of correlated binary responses from the marginal logit model 
 \begin{equation*}
@@ -378,7 +381,7 @@ It follows that $e_{it}^{B}\sim F$ for all $i$ and $t$ and $\textrm{corr}(\mathb
 ```{r}
 set.seed(8)
 # simulation of epsilon variables
-library(evd)
+library("evd")
 simulated_latent_variables1 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
                                       model = "log", d = cluster_size)
 simulated_latent_variables2 <- rmvevd(sample_size, dep = sqrt(1 - 0.9),
@@ -410,7 +413,6 @@ To achieve simulation of clustered binary, ordinal and nominal responses under n
 
 5. Run the core function to obtain realizations of the simulated clustered responses.
 
-\textbf{ }
 
 ```{example, label=no-covariate, name="Simulation of clustered binary responses without covariates"}
 Suppose the goal is to simulate $5000$ clustered binary responses with $\Pr(Y_{t}=1)=0.8$ for all $t=1,\ldots,4$. For simplicity, assume that the clustered binary responses are independent.
@@ -440,13 +442,12 @@ simulated_binary_dataset <- rbin(clsize = cluster_size,
 colMeans(simulated_binary_dataset$Ysim)
 ```
 
-\textbf{ }
 ```{example, Example2NoCovariates, name="Simulation of clustered nominal responses without covariates"}
 Suppose the aim is to simulate $N=5000$ clustered nominal responses with
 $\Pr(Y_{t}=1)=0.1$, $\Pr(Y_{t}=2)=0.2$, $\Pr(Y_{t}=3)=0.3$ and $\Pr(Y_{t}=4)=0.4$, for all $i$ and $t=1,\ldots,3$. For the sake of simplicity, we assume that the clustered responses are independent. 
 ```
 
-```{r, tidy=TRUE}
+```{r}
 # sample size
 sample_size <- 5000
 # cluster size
@@ -470,8 +471,44 @@ apply(simulated_nominal_dataset$Ysim, 2, table) / sample_size
 ```
 
 
+## A note on the correlation matrix
+
+In `SimCorMultRes`, the user provides the correlation matrix (denoted as $\mathbf{R}$) for the multivariate normal distribution used in the intermediate step of the NORTA method, rather than the correlation matrix of the latent responses used in the corresponding threshold approach. This choice is motivated by the observation that when all the marginal distributions of the correlated latent responses follow a logistic distribution, the correlation matrix $\mathbf{R}$ and the correlation matrix of the latent responses are expected to be similar, as noted by Touloumis (2016). Therefore, in `SimCorMultRes`, this approximation is employed irrespective of the marginal distribution of the latent `responses`.
+
+
+To evaluate the validity of this approximation for the threshold approaches employed in `SimCorMultRes`, a simulation study was conducted. For a fixed sample size $N$ and a correlation parameter $\rho$, $N$ independent bivariate random vectors $\{\mathbf y_{i}: i = 1, \ldots, N \}$ from a bivariate normal distribution with mean vector the zero vector and covariance matrix the correlation matrix 
+\[
+\mathbf R = \begin{bmatrix}
+1 & \rho\\
+\rho & 1
+\end{bmatrix}
+\]
+were drawn. The sample correlation was used to estimate $\rho$. Next, the NORTA method was applied to obtain bivariate random vectors $\{\mathbf z_{i}: i = 1, \ldots, N \}$ so that their marginal distribution is the logistic distribution. Their correlation parameter, say $\rho_{z}$, was estimated using the corresponding sample correlation. Then, the NORTA method was applied to obtain bivariate random vectors $\{\mathbf w_{i}: i = 1, \ldots, N \}$ so that their marginal distribution is the Gumbel distribution. Their correlation parameter, say $\rho_{w}$, was estimated using their sample correlation. 
+
+For a fixed value of $\rho$, this procedure was replicated $10,000,000$ times to reduce the simulation error and with $N=10,000$ to reduce the sampling error. The three correlation parameters $\rho$, $\rho_z$ and $\rho_w$ were estimated using their corresponding Monte Carlo counterparts, denoted by $\widehat{\rho}$, $\widehat{\rho}_z$ and $\widehat{\rho}_w$, respectively. We let $\rho \in \{ 0, 0.01,0.02,\ldots, 0.99\}$.
+
+The dataframe `simulation` contains the true correlation parameter $\rho$ (`rho`) and the Monte Carlo estimates $\widehat{\rho}$ (`normal`), $\widehat{\rho}_z$ (`logistic`) and $\widehat{\rho}_w$ (`gumbel`) from the simulation study described above. As expected, $\widehat{\rho} \approx \rho$ regardless of the strength of the correlation parameter. For the case of logistic marginal distributions, the average difference between $\rho$ and $\widehat{\rho}_z$ is `r rho = simulation$rho; logistic = simulation$logistic; round(mean(rho - logistic), 4)`, taking the maximum value of `r round(max(rho - logistic), 4)` at $\rho = `r rho[which.max(rho - logistic)]`$. Therefore $\rho$ appears to approximate $\rho_{z}$ to 2 decimal points. For the case of Gumbel marginal distributions, the average difference between $\rho$ and $\widehat{\rho}_w$ is `r gumbel = simulation$gumbel; round(mean(rho - gumbel), 4)`, taking the maximum value of `r round(max(rho - gumbel), 4)` at $\rho = `r rho[which.max(rho - gumbel)]`$. Although $\rho$ appears to approximate well $\rho_{w}$, there is some accuracy loss compared to $\rho_{z}$. The plot below shows the differences between the true correlation coefficient of the bivariate normal distribution and the simulated correlations for $\rho$, $\rho_z$ or $\rho_w$.
+
+
+```{r echo = FALSE, fig.cap= "Difference between the correlation parameters of the bivariate normal distribution and of the latent variables for three different marginal distributions."}
+plot(rho - normal ~ rho, data = simulation, type = "l", col = "blue",
+    ylim = c(0, 0.016),
+    ylab = expression(rho - hat(rho)),
+    xlab = expression(rho))
+points(rho - logistic ~ rho, data = simulation, type = "l", col = "red",
+       lty = 2)
+points(rho - gumbel ~ rho, data = simulation, type = "l", col = "grey",
+       lty = 3)
+legend("topright", legend = c("Normal", "Logistic", "Gumbel"),
+      col = c("blue", "red", "grey"), lwd = 1, lty = c(1, 2, 3))
+title(main = paste("Difference between true and simulated correlation"))
+```
+
+Overall, there is little accuracy loss by specifying the correlation matrix of the multivariate normal distribution in the intermediate step of the NORTA distribution instead of the correlation matrix of correlated latent responses regardless of whether their marginal distributions are either logistic or Gumbel distributions. Users can treat the correlation matrix passed on to the core functions of `SimCorMultRes` as the correlation matrix of the latent variables. 
+
+
 # How to Cite
-```{r, comment=""}
+```{r comment=""}
 citation("SimCorMultRes")
 ```
 
